@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "app_userprofile",
     "app_preference",
-    # "phonenumber_field"
+    "app_commonmatching"
 ]
 
 MIDDLEWARE = [
@@ -147,3 +147,5 @@ AUTH_USER_MODEL='app_user.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+

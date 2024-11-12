@@ -24,7 +24,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", include('app_user.urls')),
     path('profile/',include('app_userprofile.urls')),
-    path('preference/',include('app_preference.urls'))
+    path('preference/',include('app_preference.urls')),
+    path('commonmatch/',include('app_commonmatching.urls'))
 ]
 
 if settings.DEBUG:
