@@ -6,7 +6,7 @@ class CommonMatchingTable(models.Model):
 
         ('gender', 'Gender'),
 
-        ('age', 'Age'),
+        # ('age', 'Age'),
 
         ('caste', 'Caste'),
 
@@ -14,13 +14,13 @@ class CommonMatchingTable(models.Model):
 
         ('profession', 'Profession'),
 
-        ('income', 'Income'),
+        # ('income', 'Income'),
 
         ('education', 'Education'),
 
-        ('height', 'Height'),
+        # ('height', 'Height'),
 
-        ('weight', 'Weight'),
+        # ('weight', 'Weight'),
 
         ('location', 'Location'),
 
@@ -50,14 +50,10 @@ class MasterTable(models.Model):
         # Prefix mapping based on type
         prefix = {
             'gender': 'GE',
-            'religion': 'RE',
-            'age': 'AG',
             'caste': 'CA',
+            'religion': 'RE',
             'profession': 'PR',
-            'income': 'IN',
             'education': 'ED',
-            'height': 'HE',
-            'weight': 'WE',
             'location': 'LO',
             'language': 'LA',
             'marital_status': 'MS'

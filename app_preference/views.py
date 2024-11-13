@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import  make_password
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -21,8 +22,11 @@ class PreferenceCreateView(APIView):
     
     def get(self,request):
         preference=Preference.objects.all()
-        serializer=Preferenceserializers(preference,many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        paginator.page_size = 2  # Or use PAGE_SIZE from settings.py
+        paginated_preference = paginator.paginate_queryset(preference, request)
+        serializer=Preferenceserializers(paginated_preference,many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 class PreferencebyIdView(APIView):
     permission_classes= [permissions.IsAuthenticated]

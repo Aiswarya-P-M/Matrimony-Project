@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -30,8 +31,11 @@ class CreateProfileView(APIView):
     
     def get(self, request):
         profile=UserProfile.objects.all()
-        serializer=UserProfileserializers(profile, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # Or use PAGE_SIZE from settings.py
+        paginated_profile = paginator.paginate_queryset(profile, request)
+        serializer=UserProfileserializers(paginated_profile, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 class ProfileDetailsView(APIView):
     permission_classes=[permissions.IsAuthenticated]

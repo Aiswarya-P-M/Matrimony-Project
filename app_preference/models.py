@@ -1,5 +1,6 @@
 from django.db import models
 from app_user.models import CustomUser
+from app_commonmatching.models import CommonMatchingTable,MasterTable
 # Create your models here.
 class Preference(models.Model):
     user_id = models.OneToOneField(CustomUser, on_delete=models.DO_NOTHING, null=True, blank=True)
@@ -15,3 +16,4 @@ class Preference(models.Model):
     Gender=models.CharField(max_length=50, null=True, blank=True)
     created_on=models.DateTimeField(auto_now_add=True)
     updated_on=models.DateTimeField(auto_now=True)
+    
