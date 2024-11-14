@@ -25,7 +25,9 @@ urlpatterns = [
     path("users/", include('app_user.urls')),
     path('profile/',include('app_userprofile.urls')),
     path('preference/',include('app_preference.urls')),
-    path('commonmatch/',include('app_commonmatching.urls'))
+    path('commonmatch/',include('app_commonmatching.urls')),
+    path('subscription/',include('app_subscription.urls')),
+    path('matching/',include('app_matching.urls'))
 ]
 
 if settings.DEBUG:

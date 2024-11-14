@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "app_userprofile",
     "app_preference",
-    "app_commonmatching"
+    "app_commonmatching",
+    "app_subscription",
+    "app_matching"
 ]
 
 MIDDLEWARE = [

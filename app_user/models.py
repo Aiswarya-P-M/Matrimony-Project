@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
 from phonenumber_field.modelfields import PhoneNumberField
+from app_subscription.models import Subscription
 
 
 class CustomUser(AbstractUser):
@@ -23,7 +24,7 @@ class CustomUser(AbstractUser):
     created_on=models.DateField(auto_now_add=True)
     updated_on=models.DateField(auto_now=True)
     is_active=models.BooleanField(default=True)
-    subscription_plan=models.CharField(max_length=50, null=True, blank=True)
+    subscription_plan=models.OneToOneField(Subscription,on_delete=models.DO_NOTHING, null=True, blank=True)
     is_superuser=models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
