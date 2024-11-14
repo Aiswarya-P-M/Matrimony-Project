@@ -41,3 +41,8 @@ class MasterTableCreateView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class MasterTableListView(generics.ListAPIView):
+    queryset = MasterTable.objects.all()
+    serializer_class = MasterTableSerializer
+    permission_classes = [IsAdminUserAndStaff]
