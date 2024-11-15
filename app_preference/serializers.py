@@ -54,7 +54,7 @@ class Preferenceserializers(serializers.ModelSerializer):
         
         invalid_values = [item for item in value if item not in valid_values]
         if invalid_values:
-            raise serializers.ValidationError(f"Invalid caste values: {', '.join(invalid_values)}")
+            raise serializers.ValidationError(f"Invalid caste values: {', '.join(invalid_values)}. Valid values are: {', '.join(valid_values)}.")
         return value
 
     def validate_Religion(self, value):
@@ -67,7 +67,7 @@ class Preferenceserializers(serializers.ModelSerializer):
         
         invalid_values = [item for item in value if item not in valid_values]
         if invalid_values:
-            raise serializers.ValidationError(f"Invalid religion values: {', '.join(invalid_values)}")
+            raise serializers.ValidationError(f"Invalid caste values: {', '.join(invalid_values)}. Valid values are: {', '.join(valid_values)}.")
         return value
 
 

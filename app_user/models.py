@@ -24,7 +24,7 @@ class CustomUser(AbstractUser):
     created_on=models.DateField(auto_now_add=True)
     updated_on=models.DateField(auto_now=True)
     is_active=models.BooleanField(default=True)
-    subscription_plan=models.OneToOneField(Subscription,on_delete=models.DO_NOTHING, null=True, blank=True)
+    subscription_plan=models.ForeignKey(Subscription,on_delete=models.DO_NOTHING, null=True, blank=True)
     is_superuser=models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
