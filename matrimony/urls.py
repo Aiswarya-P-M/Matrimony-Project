@@ -27,7 +27,8 @@ urlpatterns = [
     path('preference/',include('app_preference.urls')),
     path('commonmatch/',include('app_commonmatching.urls')),
     path('subscription/',include('app_subscription.urls')),
-    path('matching/',include('app_matching.urls'))
+    path('matching/',include('app_matching.urls')),
+    path('message/',include('app_message.urls')),
 ]
 
 if settings.DEBUG:

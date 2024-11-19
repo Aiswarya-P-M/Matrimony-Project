@@ -1,14 +1,16 @@
-from django.shortcuts import render
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+
+from rest_framework.views import APIView
+from rest_framework import permissions, status
+from rest_framework.response import Response
+
 from app_preference.models import Preference
 from app_userprofile.models import UserProfile
 from app_user.models import CustomUser
 from .models import Matching
 from .utils import calculate_match_score  # <-- Import the utility function
-from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
-from rest_framework import permissions
-from rest_framework.response import Response
+
 
 class FindMatchView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -32,12 +34,6 @@ class FindMatchView(APIView):
                 status=403
             )
 
-        # Ensure user1 and user2 are not the same
-        # if user1_id == user2_id:
-        #     return Response(
-        #         {"error": "Cannot match the same user. Please select a different profile."},
-        #         status=400
-        #     )
 
         # Get user1 and user2
         user1 = get_object_or_404(CustomUser, user_id=user1_id)
@@ -74,3 +70,50 @@ class FindMatchView(APIView):
             'match_score': match_score,
             'status': status
         }, status=201)
+
+class FindAllMatchesView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Get the logged-in user
+        user = request.user
+        try:
+            user_profile = UserProfile.objects.get(user_id=user.user_id)
+            user_preference = Preference.objects.get(user_id=user.user_id)
+        except (UserProfile.DoesNotExist, Preference.DoesNotExist):
+            return Response({"error": "User profile or preferences not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # List to store match results
+        match_results = []
+
+        # Loop through all users (excluding the logged-in user)
+        all_users = CustomUser.objects.all()
+        for other_user in all_users:
+            if other_user.user_id == user.user_id:  # Skip the logged-in user
+                continue
+
+            try:
+                other_user_profile = UserProfile.objects.get(user_id=other_user.user_id)
+                match_score = calculate_match_score(user_preference, other_user_profile)
+                
+                if match_score > 0:  # Only include matches with a positive score
+                    # Set status based on match score
+                    status_value = 'accepted' if match_score >= 70 else 'pending'
+
+                    match_results.append({
+                        'user1_id': user.user_id,
+                        'user2_id': other_user.user_id,
+                        'match_score': match_score,
+                        'status': status_value
+                    })
+            except UserProfile.DoesNotExist:
+                continue  # Skip users without profiles
+
+        # Sorting match results manually
+        for i in range(len(match_results)):
+            for j in range(i + 1, len(match_results)):
+                if match_results[i]['match_score'] < match_results[j]['match_score']:
+                    # Swap the elements if the current score is less than the next one
+                    match_results[i], match_results[j] = match_results[j], match_results[i]
+
+        return Response(match_results, status=status.HTTP_200_OK)  

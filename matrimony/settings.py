@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     "app_preference",
     "app_commonmatching",
     "app_subscription",
-    "app_matching"
+    "app_matching",
+    "app_message"
 ]
 
 MIDDLEWARE = [
@@ -151,5 +152,6 @@ AUTH_USER_MODEL='app_user.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 

@@ -1,15 +1,17 @@
 # from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import  make_password
+
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.authtoken.models import Token
-from rest_framework import permissions
+from rest_framework import permissions,status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+
+
 from .models import Preference
 from .serializers import Preferenceserializers
-from rest_framework import permissions
+
 
 class PreferenceCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -4,7 +4,6 @@ from django.contrib.auth.hashers import make_password
 from phonenumber_field.modelfields import PhoneNumberField
 from app_subscription.models import Subscription
 
-
 class CustomUser(AbstractUser):
     # Define the role choices
     class Role(models.TextChoices):
@@ -40,6 +39,10 @@ class CustomUser(AbstractUser):
     
     # objects = CustomUserManager()
     def save(self, *args, **kwargs):
-        if self.password:  # Ensure password is hashed only if set
+    # Prevent double hashing
+        if self.password and not self.password.startswith("pbkdf2_sha256$"):
             self.set_password(self.password)
         super().save(*args, **kwargs)
+
+
+    

@@ -1,15 +1,15 @@
-from django.shortcuts import render
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import  make_password
+from django.contrib.auth.hashers import check_password
+
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.authtoken.models import Token
-from rest_framework import permissions
+from rest_framework import permissions,status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+
 from .models import CustomUser
 from .serializers import CustomUserserializers
-from rest_framework import permissions
+
 # Create your views here.
 
 
@@ -36,10 +36,10 @@ class UserLoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-
+        # print(username,password)
         # Pass the raw password to authenticate, not a manually hashed one
         user = authenticate(username=username, password=password)
-        
+        # print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{user}")
         if user is not None and user.is_active:
             # Get or create token for the authenticated user
             token, created = Token.objects.get_or_create(user=user)
@@ -91,3 +91,24 @@ class UserDeactivateView(APIView):
 
         # Respond with a success message indicating the user has been deactivated
         return Response({'message': f'User {user.username} deactivated successfully'}, status=status.HTTP_200_OK)
+
+class ResetPasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not old_password or not new_password:
+            return Response({"message": "Old and new passwords are required."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.check_password(old_password):
+            return Response({"message": "Incorrect old password."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
