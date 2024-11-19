@@ -22,13 +22,13 @@ class PreferenceCreateView(APIView):
             return Response({"message":"Preference added successfully"},status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
-    def get(self,request):
-        preference=Preference.objects.all()
-        paginator = PageNumberPagination()
-        paginator.page_size = 2  # Or use PAGE_SIZE from settings.py
-        paginated_preference = paginator.paginate_queryset(preference, request)
-        serializer=Preferenceserializers(paginated_preference,many=True)
-        return paginator.get_paginated_response(serializer.data)
+    # def get(self,request):
+    #     preference=Preference.objects.all()
+    #     paginator = PageNumberPagination()
+    #     paginator.page_size = 2  # Or use PAGE_SIZE from settings.py
+    #     paginated_preference = paginator.paginate_queryset(preference, request)
+    #     serializer=Preferenceserializers(paginated_preference,many=True)
+    #     return paginator.get_paginated_response(serializer.data)
 
 class PreferencebyIdView(APIView):
     permission_classes= [permissions.IsAuthenticated]
