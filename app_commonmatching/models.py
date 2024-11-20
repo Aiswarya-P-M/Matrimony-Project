@@ -3,11 +3,8 @@ from django.db import models
 class CommonMatchingTable(models.Model):
 
     TYPE_CHOICES = [
-
         ('gender', 'Gender'),
-
         # ('age', 'Age'),
-
         ('caste', 'Caste'),
 
         ('religion', 'Religion'),
@@ -28,8 +25,7 @@ class CommonMatchingTable(models.Model):
 
         ('marital_status','Marital_status')
 
-    ]
- 
+    ] 
     type_id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, unique=True)
     created_on=models.DateTimeField(auto_now_add=True)

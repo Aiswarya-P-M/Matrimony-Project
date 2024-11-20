@@ -113,8 +113,15 @@ class ResetPasswordView(APIView):
 
     def put(self, request):
         user = request.user
+        username =  request.data.get('username')
         old_password = request.data.get('old_password')
         new_password = request.data.get('new_password')
+
+        if username != user.username:
+            return Response(
+                {"message": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         if not old_password or not new_password:
             return Response({"message": "Old and new passwords are required."},
