@@ -2382,7 +2382,7 @@ Content-Type: application/json
 }
 ```
 
-### Example Reponse
+<!-- ### Example Reponse
 
 1.` HTTP Status: 201 CREATED`
 ```
@@ -2743,7 +2743,7 @@ Content-Type:  application/json
     "detail": "No Subscription matches the given query."
 }
 ```
----
+--- -->
 
 
 # API Endpoints of Subscription app

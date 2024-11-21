@@ -53,12 +53,25 @@ class UnreadMessageNotificationView(APIView):
 
 #2. Matchfound Notification when creating anew profile(only for users with subscription plan premium and platinum)
 
-# class MatchNotificationView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
+class MatchNotificationView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-#     def post(self,request):
-#         if not(request.user.is_admin and request.user.is_staff and request.user.is_superuser):
-#             return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+    def post(self,request):
+        if not(request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+            return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
-#             user_id = request.data.get("user_id")
-#             user = Customuser.objects.get(id=user_id)
+            user_id = request.data.get("user_id")
+            user = Customuser.objects.get(id=user_id)
+
+            if user.subscription_plan in [SubscriptionPlan.PREMIUM, SubscriptionPlan.PLATINUM]:
+            # Create a new match notification
+                notification_message = "Congratulations! A new match has been found for you."
+                Notification.objects.create(
+                    receiver_id=user.id,
+                    notification_title="New Match Found",
+                    notification_content=notification_message,
+                    status="Unread"  # Mark it as unread when it's first created
+                )
+                return Response({"message": "Notification sent successfully."}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"error": "The user must have a premium or platinum subscription to receive match notifications."}, status=status.HTTP_403_FORBIDDEN)
