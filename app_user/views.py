@@ -151,7 +151,7 @@ class UserListView(APIView):
             return Response({"error": "You do not have permission to view this data."}, status=403)
 
         # Get all users
-        users = CustomUser.objects.all()
+        users = CustomUser.objects.filter(is_admin=False, is_staff=False, is_superuser=False)
         
         # Paginate the users
         paginator = PageNumberPagination()
@@ -189,6 +189,46 @@ class DeactivateUserbyAdminView(APIView):
             return Response({'message': f'User {user.username} is already deactivated.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Deactivate the user using update
-        CustomUser.objects.filter(user_id=user_id).update(is_active=False)
+        CustomUser.objects.filter(user_id=user_id).update(is_active=False,role='suspended')
 
         return Response({'message': f'User {user.username} deactivated successfully.'}, status=status.HTTP_200_OK)
+
+
+class ActiveUsersListView(APIView):
+    permission_classes = [permissions.IsAuthenticated]  # Ensure the user is authenticated
+
+    def get(self, request):
+        # Check if the user is an admin by checking is_admin, is_staff, or is_superuser
+        if not (request.user.is_admin or request.user.is_staff or request.user.is_superuser):
+            return Response({"error": "You do not have permission to view this data."}, status=403)
+
+        # Get all users
+        users = CustomUser.objects.filter(is_admin=False, is_staff=False, is_superuser=False,is_active=True)
+        
+        # Paginate the users
+        paginator = PageNumberPagination()
+        paginator.page_size = 2  # Or use PAGE_SIZE from settings.py
+        paginated_users = paginator.paginate_queryset(users, request)
+        
+        # Serialize the users data
+        serializer = CustomUserserializers(paginated_users, many=True)
+        
+        # Remove password field before sending response
+        for user_data in serializer.data:
+            if 'password' in user_data:
+                user_data.pop('password')  # Remove the password from the response
+
+        return paginator.get_paginated_response(serializer.data)
+
+
+class InactiveUsersListView(APIView):
+    def get(self,request):
+        # if not (request.user.is_admin or request.user.is_staff or request.user.is_superuser):
+        #     return Response({"error": "You do not have permission to view this data."}, status=403)
+
+        users=CustomUser.objects.filter(is_active=False)
+        serializer=CustomUserserializers(users, many=True)
+        for user_data in serializer.data:
+            if 'password' in user_data:
+                user_data.pop('password')
+        return Response(serializer.data, status=status.HTTP_200_OK)

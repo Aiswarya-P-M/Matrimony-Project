@@ -3,7 +3,7 @@ from .models import UserProfile
 from app_commonmatching.models import CommonMatchingTable, MasterTable
 
 class UserProfileserializers(serializers.ModelSerializer):
-    Profile_img_url = serializers.SerializerMethodField()
+    # Profile_img_url = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile

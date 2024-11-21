@@ -29,6 +29,7 @@ urlpatterns = [
     path('subscription/',include('app_subscription.urls')),
     path('matching/',include('app_matching.urls')),
     path('message/',include('app_message.urls')),
+    path('notification/',include('app_notification.urls'))
 ]
 
 if settings.DEBUG:

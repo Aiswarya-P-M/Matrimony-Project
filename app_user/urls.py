@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import ( UsercreateView,UserLoginView,UserLogoutView, UserdetailsView,
-                     UserDeactivateView, ResetPasswordView,UserListView, DeactivateUserbyAdminView
+                     UserDeactivateView, ResetPasswordView,UserListView, DeactivateUserbyAdminView,
+                     ActiveUsersListView,InactiveUsersListView
                 )
 
 urlpatterns=[
@@ -15,7 +16,9 @@ urlpatterns=[
     #Admin
 
     path('listusers/',UserListView.as_view(),name='list_users'),
-    path('deactivateuser/<int:user_id>',DeactivateUserbyAdminView.as_view(),name='deactivate_user')
+    path('deactivateuser/<int:user_id>',DeactivateUserbyAdminView.as_view(),name='deactivate_user'),
+    path('activeusers/',ActiveUsersListView.as_view(),name='active_users'),
+    path('inactiveusers/', InactiveUsersListView.as_view(), name='inactive_users')
     
    
     

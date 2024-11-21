@@ -7,7 +7,8 @@ from .models import *
 class CustomUserserializers(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = "__all__"
+        fields = ["user_id","username","email","password","phone_number","first_name","last_name","joined_date","last_login",
+        "subscription_plan","is_active","role"]
 
     
     def validate_password(self, value):

@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     "app_commonmatching",
     "app_subscription",
     "app_matching",
-    "app_message"
+    "app_message",
+    "app_notification"
 ]
 
 MIDDLEWARE = [

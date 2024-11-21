@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from .models import Message
 from .serializers import MessageSerializers
 
+from app_notification.models import Notification
 
 
 class CreateMessageView(APIView):
@@ -40,10 +41,15 @@ class MessagebyReceiverView(APIView):
         
         messages.filter(status='unread').update(status='read')
         # Serialize the messages
+        Notification.objects.filter(receiver=receiver,status='Unread').update(status='Read')
+
         serializer = MessageSerializers(messages, many=True)
         
         # Return the serialized messages
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    
+
 
 class UnreadMessageView(APIView):
     permission_classes = [permissions.IsAuthenticated]
