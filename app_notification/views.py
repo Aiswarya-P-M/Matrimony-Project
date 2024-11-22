@@ -1,3 +1,5 @@
+# from django.contrib.auth import get_user_model
+
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,7 +14,7 @@ from app_user.models import CustomUser
 from app_subscription.models import Subscription
 from app_userprofile.models import UserProfile
 from app_preference.models import Preference
-
+from app_commonmatching.models import CommonMatchingTable, MasterTable
 
 #1. Unread message notification
 
@@ -128,7 +130,7 @@ class BulkMessageNotificationView(APIView):
             return Response({"error": "message_title and message_content are required."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Get all active users
-        active_users = CustomUser.objects.filter(is_active=True)
+        active_users = CustomUser.objects.filter(is_active=True,is_admin=False)
 
         if not active_users.exists():
             return Response({"error": "No active users found."}, status=status.HTTP_404_NOT_FOUND)
@@ -147,4 +149,50 @@ class BulkMessageNotificationView(APIView):
 
 # Get notification to users while admin made any changes in the master table
 
-# class NewFeatureAddedView(APIView):
+class AddMasterTableEntryAndNotify(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Check if the user has the necessary permissions (admin, staff, superuser)
+        if not (request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+            return Response({"error": "You do not have permission to do this action."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Get the type_id and value from the request data
+        type_id = request.data.get('type_id')
+        value = request.data.get('value')
+        print(type_id, value)
+
+        # Check if both type_id and value are provided
+        if not type_id or not value:  # Corrected the condition
+            return Response({"error": "Both type_id and value are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Retrieve the CommonMatchingTable entry using type_id
+            common_type = CommonMatchingTable.objects.get(type_id=type_id)
+        except CommonMatchingTable.DoesNotExist:
+            return Response({"error": "Invalid type_id."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create the new MasterTable entry, passing the primary key (type_id) from common_type
+        new_entry = MasterTable.objects.create(type=common_type, value=value)
+
+        # Get all active users
+        users = CustomUser.objects.filter(is_active=True,is_admin=False)
+        notification_message = f"A new value has been added to {common_type.type}: {value}."
+
+        # Create notifications for each active user
+        for user in users:
+            Notification.objects.create(
+                receiver_id=user.user_id,  # Assuming receiver_id is the user_id of CustomUser
+                notification_title=f"New {common_type.type} Value Added",
+                notification_content=notification_message,
+                status="Unread"  # Mark as unread initially
+            )
+
+        return Response(
+            {"message": f"New {common_type.type} value '{value}' added successfully and notifications sent."},
+            status=status.HTTP_201_CREATED
+        )
+
+
+
+

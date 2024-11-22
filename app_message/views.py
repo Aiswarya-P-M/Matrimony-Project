@@ -131,3 +131,43 @@ class ViewBulkMessages(APIView):
             status=status.HTTP_200_OK
         )
 
+
+# viewing the master table changes notification
+class ViewMasterTableNotification(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+
+
+    def get(self, request):
+        # Get the logged-in user
+        user = request.user
+
+        # Get the notifications related to changes in the MasterTable for the logged-in user
+        notifications = Notification.objects.filter(
+            receiver_id=user.user_id,
+            notification_title__icontains="Value Added"  # Filter by notification title
+        ).order_by('-created_on')
+
+        if not notifications.exists():
+            return Response({"message": "No MasterTable change notifications found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Mark notifications as "Read" by updating their status
+        notifications.filter(status="Unread").update(status="Read")
+
+        # Serialize the notifications
+        serialized_notifications = [
+            {
+                "id": notification.notification_id,
+                "title": notification.notification_title,
+                "content": notification.notification_content,
+                "status": notification.status,
+                "created_on": notification.created_on,
+            }
+            for notification in notifications
+        ]
+
+        return Response(
+            {"notifications": serialized_notifications},
+            status=status.HTTP_200_OK
+        )
+
+
