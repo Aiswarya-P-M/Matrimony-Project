@@ -9,7 +9,7 @@ from .models import Message
 from .serializers import MessageSerializers
 
 from app_notification.models import Notification
-
+from app_notification.serializers import NotificationSerializer
 
 class CreateMessageView(APIView):
     permission_classes= [permissions.IsAuthenticated]
@@ -57,3 +57,77 @@ class UnreadMessageView(APIView):
         messages=Message.objects.filter(sender_id=request.user,status='unread').order_by('-created_on')
         serializer=MessageSerializers(messages, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class ViewMatchNotification(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Get the logged-in user
+        user = request.user
+
+        # Retrieve match notifications for the logged-in user
+        notifications = Notification.objects.filter(
+            receiver_id=user.user_id, 
+            notification_title="New Match Found"
+        ).order_by('-created_on')
+
+        if not notifications.exists():
+            return Response({"message": "No match notifications found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update unread notifications to read
+        notifications.filter(status="Unread").update(status="Read")
+
+        # Serialize the notifications
+        serialized_notifications = [
+            {
+                "id": notification.notification_id,
+                "title": notification.notification_title,
+                "content": notification.notification_content,
+                "status": notification.status,
+                "created_on": notification.created_on,
+            }
+            for notification in notifications
+        ]
+
+        return Response(
+            {"match_notifications": serialized_notifications},
+            status=status.HTTP_200_OK
+        )
+
+# Bulk message viewing by users
+
+class ViewBulkMessages(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Filter notifications with title "Christmas" for the logged-in user
+        notifications = Notification.objects.filter(
+            receiver_id=request.user.user_id,
+            notification_title="Christmas"  # Change this to the actual title you want to match
+        ).order_by('-created_on')
+
+        if not notifications.exists():
+            return Response({"message": "No bulk notifications found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Mark notifications as "Read"
+        notifications.filter(status="Unread").update(status="Read")
+
+        # Serialize and return the notifications
+        serialized_notifications = [
+            {
+                "id": notification.notification_id,
+                "title": notification.notification_title,
+                "content": notification.notification_content,
+                "status": notification.status,
+                "created_on": notification.created_on,
+            }
+            for notification in notifications
+        ]
+
+        return Response(
+            {"message_notifications": serialized_notifications},
+            status=status.HTTP_200_OK
+        )
+
