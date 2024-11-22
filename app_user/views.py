@@ -11,6 +11,8 @@ from rest_framework.views import APIView
 from .models import CustomUser
 from .serializers import CustomUserserializers
 
+from app_userprofile.models import UserProfile
+from app_preference.models import Preference
 # Create your views here.
 
 #users
@@ -102,9 +104,16 @@ class UserDeactivateView(APIView):
         user.is_active = False
         user.save()
 
-        # Respond with a success message indicating the user has been deactivated
-        return Response({'message': f'User {user.username} deactivated successfully'}, status=status.HTTP_200_OK)
+        UserProfile.objects.filter(user_id=user).update(is_active=False)
 
+        # Deactivate Preference
+        Preference.objects.filter(user_id=user).update(is_active=False)
+
+        # Respond with a success message
+        return Response(
+            {'message': f'User {user.username}, profile, and preferences deactivated successfully'},
+            status=status.HTTP_200_OK
+        )
 
 #7. Resetpassword
 
@@ -190,6 +199,8 @@ class DeactivateUserbyAdminView(APIView):
 
         # Deactivate the user using update
         CustomUser.objects.filter(user_id=user_id).update(is_active=False,role='suspended')
+        UserProfile.objects.filter(user_id=user_id).update(is_active=False)
+        Preference.objects.filter(user_id=user_id).update(is_active=False)
 
         return Response({'message': f'User {user.username} deactivated successfully.'}, status=status.HTTP_200_OK)
 

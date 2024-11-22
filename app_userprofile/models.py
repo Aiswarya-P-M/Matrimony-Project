@@ -20,6 +20,7 @@ class UserProfile(models.Model):
     Profile_img=models.ImageField(upload_to='profile_img')
     created_on=models.DateTimeField(auto_now_add=True)
     updated_on=models.DateTimeField(auto_now=True)
+    is_active=models.BooleanField(default=True)
 
 
     

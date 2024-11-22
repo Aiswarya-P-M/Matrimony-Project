@@ -22,9 +22,10 @@ class Preference(models.Model):
     Religion = models.JSONField(null=True, blank=True)
     Gender = models.CharField(max_length=50, null=True, blank=True)
     Marital_status = models.CharField(max_length=50, null=True, blank=True)
-
+    is_active = models.BooleanField(default=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+    
 
     def __str__(self):
         return f"Preference for user {self.user_id}"

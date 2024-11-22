@@ -61,11 +61,11 @@ class ProfileDetailsView(APIView):
         except UserProfile.DoesNotExist:
             return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    # def delete(self,request,user_id):
-    #     try:
-    #         profile=UserProfile.objects.get(user_id=user_id)
-    #         profile.is_active=False
-    #         profile.save()
-    #         return Response({"Message":"Profile deleted successfully"},status=status.HTTP_200_OK)
-    #     except:
-    #         return Response({"message":"Profile not found"},status=status.HTTP_400_BAD_REQUEST) 
+    def delete(self,request,user_id):
+        try:
+            profile=UserProfile.objects.get(user_id=user_id)
+            profile.is_active=False
+            profile.save()
+            return Response({"Message":"Profile deleted successfully"},status=status.HTTP_200_OK)
+        except:
+            return Response({"message":"Profile not found"},status=status.HTTP_400_BAD_REQUEST) 
