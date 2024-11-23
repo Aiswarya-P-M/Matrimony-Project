@@ -726,7 +726,7 @@ Here are the messages for the update API:
 ```
 ---
 
-## 5. Inactivate user 
+## 6. Inactivate user 
 
 * `URL`: http://127.0.0.1:8000/users/deactivate/
 
@@ -757,7 +757,7 @@ Content-Type: application/json
 
 1.` HTTP Status: 200 OK`
 
-```
+```json
 {
    "message":"User Syam deactivated successfully" 
 }
@@ -845,7 +845,7 @@ Here are the messages for the deactivate API:
 ```
 
 ---
-## 6. Reset Password 
+## 7. Reset Password 
 
 * `URL`: http://127.0.0.1:8000/users/reset/
 
@@ -1013,7 +1013,7 @@ Content-Type: application/json
 
 1.` HTTP Status: 200 OK`
 
-```
+```json
 {
     "count": 5,
     "next": "http://127.0.0.1:8000/users/listusers/?page=2",
@@ -1082,9 +1082,9 @@ Content-Type: application/json
 
 1.` HTTP Status: 200 OK`
 
-```
+```Json
 {
-    'message': User anagha deactivated successfully.'
+    "message'": "User anagha deactivated successfully."
 }
 ```
 
@@ -1171,7 +1171,7 @@ Content-Type: application/json
 
 1.` HTTP Status: 200 OK`
 
-```
+```Json
 {
     "count": 3,
     "next": "http://127.0.0.1:8000/users/activeusers/?page=2",
@@ -1191,6 +1191,7 @@ Content-Type: application/json
             "role": "user"
         },
     ]
+}
 ```
 
 ### Other Responses
@@ -1264,7 +1265,7 @@ Content-Type: application/json
 
 1.` HTTP Status: 200 OK`
 
-```
+```json
 [
     {
         "user_id": 14,
@@ -1412,7 +1413,7 @@ Content-Type: multipart/form-data
 ### Example Reponse
 
 1.` HTTP Status: 201 CREATED`
-```
+```json
 {
     "message": "Profile created successfully"
 }
@@ -1450,7 +1451,7 @@ Here are examples of possible responses for `UserProfile` creation:
 ```
 
 
-### **4. Unauthorized Request**
+### **3. Unauthorized Request**
 
 **HTTP Status:** `401 UNAUTHORIZED`
 
@@ -1460,7 +1461,7 @@ Here are examples of possible responses for `UserProfile` creation:
 }
 ```
 
-### **5. Forbidden Action (No Permissions)**
+### **4. Forbidden Action (No Permissions)**
 
 **HTTP Status:** `403 FORBIDDEN`
 
@@ -1516,13 +1517,13 @@ Content-Type:  application/json
 {
     {
     "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
-}
+    }
 }
 ```
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
     "count": 4,
     "next": null,
@@ -1567,7 +1568,7 @@ Content-Type:  application/json
 }
 ```
 
-### **5. Forbidden Action (No Permissions)**
+### **2. Forbidden Action (No Permissions)**
 
 **HTTP Status:** `403 FORBIDDEN`
 
@@ -1593,7 +1594,7 @@ Content-Type:  application/json
 ```
 
 
-## 2. Viewing Profile Details by id
+## 3. Viewing Profile Details by id
 
 * `URL`:  http://127.0.0.1:8000/profile/byid/
 
@@ -1621,7 +1622,7 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
     "id": 12,
     "Profile_img_url": "/media/profile_img/pexels-sulimansallehi-1704488_fc4Nudw.jpg",
@@ -1659,7 +1660,7 @@ Content-Type:  application/json
 }
 ```
 
-### **5. Invalid Token **
+### **2. Invalid Token **
 
 **HTTP Status:** `401 UNAUTHORIZED`
 
@@ -1679,7 +1680,7 @@ Content-Type:  application/json
 ```
 ---
 
-## 2. Update Profile Details by id
+## 4. Update Profile Details by id
 
 * `URL`:  http://127.0.0.1:8000/profile/byid/
 
@@ -1726,7 +1727,7 @@ Content-Type:  application/json
 }
 ```
 
-### **5. Validation Problem **
+### **2. Validation Problem **
 
 **HTTP Status:** `400 BAD REQUEST`
 
@@ -1745,6 +1746,71 @@ Content-Type:  application/json
 {
     "message": "Authentication credentials were not provided."
 }
+```
+## 5. Delete Profile Details by id
+
+* `URL`:  http://127.0.0.1:8000/profile/byid/
+
+* `Method` : DELETE
+
+* `Description`: Deleet profile details by id.
+
+* `Content-type`:
+  
+        Content-Type: multipart/form-data
+
+
+
+### Example Request
+```json
+```http
+DELETE /profile/byid/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 0340b35216c3dcb68f0ebd023b32f2e98d389b66"
+}
+
+```
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```
+{
+    "Message":"Profile deleted successfully"
+    }
+```
+
+### Other Responses
+
+### **1. Unauthorized Request**
+
+**HTTP Status:** `401 UNAUTHORIZED`
+
+```json
+{
+    "message": "Authentication credentials were not provided."
+}
+```
+
+### **2. Profile not found **
+
+**HTTP Status:** `400 BAD REQUEST`
+
+```json
+{
+    "message":"Profile not found"
+    }
+```
+
+### Messages
+
+1. **Profile not found**
+```json
+{
+    "message":"Profile not found"
+    }
 ```
 ---
 
@@ -1822,7 +1888,7 @@ Content-Type: application/json
 ### Example Reponse
 
 1.` HTTP Status: 201 CREATED`
-```
+```json
 {
     "message": "Preference added successfully"
 }
@@ -1926,7 +1992,7 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
     "id": 12,
     "Age": [
@@ -1991,7 +2057,7 @@ Content-Type:  application/json
 }
 ```
 
-### **5. Invalid Token**
+### **2. Invalid Token**
 
 **HTTP Status:** `400 BAD REQUEST`
 
@@ -2009,7 +2075,7 @@ Content-Type:  application/json
     "message": "Authentication credentials were not provided."
 }
 ```
-2. **Fo**
+2. **Forbidden action**
 ```json
 {
     "message": "You do not have permission to perform this action."
@@ -2052,7 +2118,7 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
     "id": 12,
     "Age": [
@@ -2166,7 +2232,7 @@ Content-Type:  application/json
 
 
 
-Here’s the `Matching` model represented in Markdown table format:
+
 
 | **Field Name**   | **Data Type**   | **Constraints**                                    | **Relationship**                      | **Description**                                            |
 |-------------------|-----------------|---------------------------------------------------|----------------------------------------|------------------------------------------------------------|
@@ -2205,7 +2271,7 @@ Content-Type: application/json
 ### Example Reponse
 
 1.` HTTP Status: 201 CREATED`
-```
+```json
 {
     "user1": "Alen",
     "user2": "geetha",
@@ -2277,7 +2343,7 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 [
     {
         "user1_id": 15,
@@ -2313,7 +2379,7 @@ Content-Type:  application/json
 }
 ```
 
-### **5. Invalid Token**
+### **2. Invalid Token**
 
 **HTTP Status:** `400 BAD REQUEST`
 
@@ -2381,63 +2447,47 @@ Content-Type: application/json
     "type":"marital_status"
 }
 ```
+### Example Reponse
 
-<!-- ### Example Reponse
-
-1.` HTTP Status: 201 CREATED`
-```
+1.` HTTP Status: 200 OK`
+```json
 {
-    "message": "Subscription added Successfully"
+    "message": "New type successfully created!"
 }
 ```
+
 
 ### Other Responses
 
-
-### **1. Validation Error Response**
-
-**HTTP Status:** `400 BAD REQUEST`
-
-```json
-{
-    "plan_type": [
-        "\"gold\" is not a valid choice."
-    ]
-}
-```
-
-### **2. Forbidden Action (No Permissions)**
+### **1. Unauthorized Request**
 
 **HTTP Status:** `403 FORBIDDEN`
 
 ```json
 {
-    "message": "You do not have permission to perform this action."
+    "error": "You do not have permission to perform this action."
 }
 ```
+
 
 ### Messages
 
-1. **Validation Error**
+1. **Forbidden**
 ```json
 {
-    "plan_type": [
-        "\"gold\" is not a valid choice."
-    ]
+    "error": "You do not have permission to perform this action."
 }
 ```
-
-
 ---
 
-## 2. List Subscription
+## 2. List common matching data
 
-* `URL`:  http://127.0.0.1:8000/subscription/list
+* `URL`: http://127.0.0.1:8000/commonmatch/getdetails/
 
 * `Method` : GET
 
-* `Description`: Retrieve subscription details.
-* 
+* `Description`: Fetching all the common matching data
+  
 * `Content-type`:
   
         Content-Type: application/json
@@ -2448,7 +2498,7 @@ Content-Type: application/json
 ### Example Request
 ```json
 ```http
-GET /subscription/list HTTP/1.1
+GET /getdetails HTTP/1.1
 Host: api.example.com
 Content-Type:  application/json
 {
@@ -2460,38 +2510,59 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
-    "count": 3,
+    "count": 8,
     "next": null,
     "previous": null,
     "results": [
         {
-            "subscription_id": 2,
-            "plan_type": "basic",
-            "start_date": "2024-06-01",
-            "end_date": "2024-12-31",
-            "status": "active",
-            "created_on": "2024-11-14T05:12:55.650109Z",
-            "updated_on": "2024-11-14T06:39:30.039128Z"
+            "type_id": 12,
+            "type": "gender",
+            "created_on": "2024-11-12T10:41:21.996587Z",
+            "updated_on": "2024-11-12T10:41:21.996587Z"
         },
         {
-            "subscription_id": 3,
-            "plan_type": "premium",
-            "start_date": "2024-01-01",
-            "end_date": "2024-12-31",
-            "status": "active",
-            "created_on": "2024-11-14T05:13:25.451489Z",
-            "updated_on": "2024-11-14T06:39:08.660198Z"
+            "type_id": 14,
+            "type": "caste",
+            "created_on": "2024-11-12T10:41:50.613243Z",
+            "updated_on": "2024-11-12T10:41:50.613243Z"
         },
         {
-            "subscription_id": 4,
-            "plan_type": "platinum",
-            "start_date": "2024-01-01",
-            "end_date": "2025-01-31",
-            "status": "active",
-            "created_on": "2024-11-14T05:14:36.041864Z",
-            "updated_on": "2024-11-14T06:38:43.817882Z"
+            "type_id": 15,
+            "type": "religion",
+            "created_on": "2024-11-12T10:41:58.620941Z",
+            "updated_on": "2024-11-12T10:41:58.620941Z"
+        },
+        {
+            "type_id": 17,
+            "type": "education",
+            "created_on": "2024-11-12T10:42:13.766260Z",
+            "updated_on": "2024-11-12T10:42:13.766260Z"
+        },
+        {
+            "type_id": 18,
+            "type": "profession",
+            "created_on": "2024-11-12T10:42:22.527023Z",
+            "updated_on": "2024-11-12T10:42:22.527023Z"
+        },
+        {
+            "type_id": 21,
+            "type": "location",
+            "created_on": "2024-11-12T10:43:10.020875Z",
+            "updated_on": "2024-11-12T10:43:10.020875Z"
+        },
+        {
+            "type_id": 22,
+            "type": "language",
+            "created_on": "2024-11-12T10:46:28.509699Z",
+            "updated_on": "2024-11-12T10:46:28.509699Z"
+        },
+        {
+            "type_id": 23,
+            "type": "marital_status",
+            "created_on": "2024-11-12T12:37:46.141815Z",
+            "updated_on": "2024-11-12T12:37:46.141815Z"
         }
     ]
 }
@@ -2510,55 +2581,221 @@ Content-Type:  application/json
 }
 ```
 
+### **2. Invalid Token**
+
+**HTTP Status:** `403 FORBIDDEN`
+
+```json
+{
+    "message":"You do not have permission to perform this action."
+}
+```
 
 ### Messages
 
-1. **Forbidden action**
+1. **Authentication credentials not provided**
 ```json
 {
-    "message": "You do not have permission to perform this action."
+    "message": "Authentication credentials were not provided."
+}
+```
+---
+
+### Common matching app contains another table named as MasterTable.
+
+
+## 1. Create Master Table data.
+
+* `URL`:  http://127.0.0.1:8000/commonmatch/master/
+
+* `Method` : POST
+
+* `Description`: Creating Master table with fields with type_id and value.
+
+* `Content-type`:
+  
+        Content-Type : application/json
+
+
+
+
+### `Master` Model
+
+
+# Master
+
+# MasterTable Model
+
+| **Field Name**  | **Data Type**       | **Constraints**                | **Relationship**                       | **Description**                                                                                     |
+|------------------|---------------------|---------------------------------|----------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `type`          | `ForeignKey`        | `on_delete=DO_NOTHING`          | Foreign key to `CommonMatchingTable`   | Links each record in `MasterTable` to a specific type defined in `CommonMatchingTable`.             |
+| `value`         | `CharField`         | `max_length=50`                | None                                   | Represents the value corresponding to the `type` (e.g., gender type or profession type).            |
+| `code`          | `CharField`         | `max_length=50`, `unique=True`, `blank=True` | None | A unique, auto-generated code based on `type` and an incremental number, formatted as a prefix and number. |
+| `created_on`    | `DateTimeField`     | `auto_now_add=True`            | None                                   | Automatically records the date and time when the record is created.                                |
+| `updated_on`    | `DateTimeField`     | `auto_now=True`                | None                                   | Automatically updates the date and time when the record is modified.                               |
+
+
+### Example Request
+
+```http
+POST /commonmatch/master HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+
+{
+    {
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
+}
+}
+```
+`Request Payload`
+```json
+[
+    { "type": 23, "value": "Single" },
+    { "type": 23, "value": "Married" },
+    { "type": 23, "value": "Divorced" },
+    { "type": 23, "value": "Widowed" },
+    { "type": 23, "value": "Separated" }
+]
+```
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+{
+    "message": "Master data created Successfully"
 }
 ```
 
 
-## 3. Retrieve Subscription Details by id
+### Other Responses
 
-* `URL`:  http://127.0.0.1:8000/subscription/list/<int:subscription_id>
+### **1. Invalid type**
+
+**HTTP Status:** `400 BAD REQUEST`
+
+```json
+{
+        "type": [
+            "Invalid pk \"55\" - object does not exist."
+        ]
+    },
+```
+
+
+### Messages
+
+1. **Invalid type**
+```json
+{
+        "type": [
+            "Invalid pk \"55\" - object does not exist."
+        ]
+    },
+```
+---
+
+## 2. List Master Table data
+
+* `URL`:http://127.0.0.1:8000/commonmatch/list/
 
 * `Method` : GET
 
-* `Description`: Retrieve Subscription Details by id.
-
+* `Description`: Fetching all the Master table data
+  
 * `Content-type`:
   
         Content-Type: application/json
 
 
+
+
 ### Example Request
 ```json
 ```http
-GET /profile/byid/ HTTP/1.1
+GET /list HTTP/1.1
 Host: api.example.com
 Content-Type:  application/json
-
+{
     {
     "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
 }
-
+}
 ```
-
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
-    "subscription_id": 4,
-    "plan_type": "platinum",
-    "start_date": "2024-01-01",
-    "end_date": "2025-01-31",
-    "status": "active",
-    "created_on": "2024-11-14T05:14:36.041864Z",
-    "updated_on": "2024-11-14T06:38:43.817882Z"
+    "count": 195,
+    "next": "http://127.0.0.1:8000/commonmatch/list/?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "type": 12,
+            "value": "Male",
+            "code": "GE001",
+            "created_on": "2024-11-12T11:15:13.028493Z",
+            "updated_on": "2024-11-12T11:15:13.028493Z"
+        },
+        {
+            "id": 2,
+            "type": 12,
+            "value": "Female",
+            "code": "GE002",
+            "created_on": "2024-11-12T11:17:21.161311Z",
+            "updated_on": "2024-11-12T11:17:21.161311Z"
+        },
+        {
+            "id": 3,
+            "type": 12,
+            "value": "Others",
+            "code": "GE003",
+            "created_on": "2024-11-12T11:17:31.798573Z",
+            "updated_on": "2024-11-12T11:17:31.798573Z"
+        },
+        {
+            "id": 45,
+            "type": 14,
+            "value": "Brahmin",
+            "code": "CA001",
+            "created_on": "2024-11-12T12:22:43.745346Z",
+            "updated_on": "2024-11-12T12:22:43.745346Z"
+        },
+        {
+            "id": 46,
+            "type": 14,
+            "value": "Kshatriya",
+            "code": "CA002",
+            "created_on": "2024-11-12T12:22:43.756727Z",
+            "updated_on": "2024-11-12T12:22:43.756727Z"
+        },
+        {
+            "id": 47,
+            "type": 14,
+            "value": "Vaishya",
+            "code": "CA003",
+            "created_on": "2024-11-12T12:22:43.763230Z",
+            "updated_on": "2024-11-12T12:22:43.763230Z"
+        },
+        {
+            "id": 48,
+            "type": 14,
+            "value": "Shudra",
+            "code": "CA004",
+            "created_on": "2024-11-12T12:22:43.768244Z",
+            "updated_on": "2024-11-12T12:22:43.768244Z"
+        },
+        {
+            "id": 49,
+            "type": 14,
+            "value": "Kayastha",
+            "code": "CA005",
+            "created_on": "2024-11-12T12:22:43.771813Z",
+            "updated_on": "2024-11-12T12:22:43.771813Z"
+        },
+    ]
 }
 ```
 
@@ -2567,183 +2804,24 @@ Content-Type:  application/json
 
 ### **1. Unauthorized Request**
 
-**HTTP Status:** `401 UNAUTHORIZED`
+**HTTP Status:** `403 FORBIDDEN`
 
 ```json
 {
-    "message": "Authentication credentials were not provided."
-}
-```
-
-### **2. Forbidden action**
-
-**HTTP Status:** `401 UNAUTHORIZED`
-
-```json
-{
-    "message": "You do not have permission to perform this action."
-}
-```
-
-### Messages
-
-1. **Forbidden Action**
-```json
-{
-    "message": "You do not have permission to perform this action."
-}
-```
-## 3. Update Subscription Details 
-
-* `URL`:  http://127.0.0.1:8000/subscription/update/<int:subscription_id>
-
-* `Method` : PUT
-
-* `Description`: Update Subscription Details.
-
-* `Content-type`:
-  
-        Content-Type: application/json
-
-
-### Example Request
-```json
-```http
-GET /update/<int:subscription_id> HTTP/1.1
-Host: api.example.com
-Content-Type:  application/json
-
-    {
-    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
-}
-
-```
-```Request Payload```
-```json
-{
-            "subscription_id": 2,
-            "plan_type": "basic",
-            "start_date": "2024-06-01",
-            "end_date": "2024-12-31",
-            "status": "active",
-            "created_on": "2024-11-14T05:14:36.041864Z",
-            "updated_on": "2024-11-14T05:14:36.041864Z"
-        }
-```
-### Example Reponse
-
-1.` HTTP Status: 200 OK`
-```
-{
-    "subscription_id": 2,
-    "plan_type": "basic",
-    "start_date": "2024-06-01",
-    "end_date": "2024-12-31",
-    "status": "active",
-    "created_on": "2024-11-14T05:12:55.650109Z",
-    "updated_on": "2024-11-20T18:21:03.517428Z"
-}
-```
-
-
-### Other Responses
-
-### **1. Unauthorized Request**
-
-**HTTP Status:** `401 UNAUTHORIZED`
-
-```json
-{
-    "message": "Authentication credentials were not provided."
-}
-```
-
-### **2. Forbidden action**
-
-**HTTP Status:** `401 UNAUTHORIZED`
-
-```json
-{
-    "message": "You do not have permission to perform this action."
-}
-```
-
-### Messages
-
-1. **Forbidden Action**
-```json
-{
-    "message": "You do not have permission to perform this action."
-}
-```
-
-## 3. Delete Subscription Details 
-
-* `URL`:  http://127.0.0.1:8000/subscription/delete/<int:subscription_id>
-
-* `Method` : PUT
-
-* `Description`: Delete Subscription Data.
-
-* `Content-type`:
-  
-        Content-Type: application/json
-
-
-### Example Request
-```json
-```http
-GET /delete/<int:subscription_id> HTTP/1.1
-Host: api.example.com
-Content-Type:  application/json
-
-    {
-    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
-}
-
-```
-
-### Example Reponse
-
-1.` HTTP Status: 200 OK`
-```
-{
-   "message":"Subscription plan deleted successfully"
-}
-```
-
-
-### Other Responses
-
-### **1. Forbidden action**
-
-**HTTP Status:** `401 UNAUTHORIZED`
-
-```json
-{
-    "message": "You do not have permission to perform this action."
-}
-```
-### **1. No valid Subscription**
-
-**HTTP Status:** `404 NOT FOUND`
-
-```json
-{
-    "detail": "No Subscription matches the given query."
+    "message": "You donot have permission to perform this action."
 }
 ```
 
 
 ### Messages
 
-1. **No valid Subscription**
+1. **Forbidden**
 ```json
 {
-    "detail": "No Subscription matches the given query."
+    "message": "You donot have permission to perform this action."
 }
 ```
---- -->
+---
 
 
 # API Endpoints of Subscription app
@@ -2765,7 +2843,7 @@ Content-Type:  application/json
 
 ### `Subscription` Model
 
-Here’s the `Subscription` model represented in Markdown table format:
+
 
 | **Field Name**       | **Data Type**  | **Constraints**                                    | **Relationship** | **Description**                                             |
 |-----------------------|---------------|---------------------------------------------------|------------------|-------------------------------------------------------------|
@@ -2787,7 +2865,7 @@ Content-Type: application/json
 
 {
     {
-    "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
 }
 }
 
@@ -2804,7 +2882,7 @@ Content-Type: application/json
 ### Example Reponse
 
 1.` HTTP Status: 201 CREATED`
-```
+```json
 {
     "message": "Subscription added Successfully"
 }
@@ -2879,7 +2957,7 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
     "count": 3,
     "next": null,
@@ -2969,7 +3047,7 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
     "subscription_id": 4,
     "plan_type": "platinum",
@@ -3012,7 +3090,7 @@ Content-Type:  application/json
     "message": "You do not have permission to perform this action."
 }
 ```
-## 3. Update Subscription Details 
+## 4. Update Subscription Details 
 
 * `URL`:  http://127.0.0.1:8000/subscription/update/<int:subscription_id>
 
@@ -3096,11 +3174,11 @@ Content-Type:  application/json
 }
 ```
 
-## 3. Delete Subscription Details 
+## 5. Delete Subscription Details 
 
 * `URL`:  http://127.0.0.1:8000/subscription/delete/<int:subscription_id>
 
-* `Method` : PUT
+* `Method` : DELETE
 
 * `Description`: Delete Subscription Data.
 
@@ -3125,7 +3203,7 @@ Content-Type:  application/json
 ### Example Reponse
 
 1.` HTTP Status: 200 OK`
-```
+```json
 {
    "message":"Subscription plan deleted successfully"
 }
@@ -3136,7 +3214,7 @@ Content-Type:  application/json
 
 ### **1. Forbidden action**
 
-**HTTP Status:** `401 UNAUTHORIZED`
+**HTTP Status:** `403 FORBIDDEN`
 
 ```json
 {
@@ -3163,4 +3241,977 @@ Content-Type:  application/json
 }
 ```
 ---
+
+
+# API Endpoints of Notification app
+
+## 1. Get Unread Message Notification
+
+* `URL`:  http://127.0.0.1:8000/notification/unread/<int:user_id>
+
+* `Method` : GET
+
+* `Description`: Get unread message notifications. The notification model contains fields like notification_id,notification_title,notification_content,receier and status.
+
+* `Content-type`:
+  
+        Content-Type : application/json
+
+
+
+
+### `Notification` Model
+
+
+# Notification Model
+
+| **Field Name**         | **Data Type**       | **Constraints**                            | **Relationship**                              | **Description**                                                                 |
+|-------------------------|---------------------|--------------------------------------------|-----------------------------------------------|---------------------------------------------------------------------------------|
+| `notification_id`       | `AutoField`         | `primary_key=True`                         | None                                          | Auto-generated unique identifier for each notification.                         |
+| `notification_title`    | `CharField`         | `max_length=300`                           | None                                          | Title of the notification.                                                     |
+| `notification_content`  | `TextField`         | None                                       | None                                          | Content/body of the notification.                                              |
+| `receiver`              | `ForeignKey`        | `on_delete=DO_NOTHING`, `null=True`, `blank=True` | Foreign key to `CustomUser`, related name: `notification_receiver` | Links the notification to a specific user (receiver).                           |
+| `status`                | `CharField`         | `max_length=20`, choices: `Unread`, `Read` | None                                          | Indicates whether the notification has been read or remains unread.            |
+| `created_on`            | `DateTimeField`     | `auto_now_add=True`                        | None                                          | Automatically records the date and time when the notification is created.       |
+| `updated_on`            | `DateTimeField`     | `auto_now=True`                            | None                                          | Automatically updates the date and time when the notification is modified.      |
+
+
+
+### Example Request
+
+```http
+POST //unread/user_id HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+
+{
+    {
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
+}
+}
+
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```
+{
+    "unread_count": 1,
+    "unread_messages": [
+        {
+            "message_id": 19,
+            "content": "How are you",
+            "status": "unread",
+            "created_on": "2024-11-23T14:48:47.281909Z",
+            "updated_on": "2024-11-23T14:48:47.281909Z",
+            "received_at": "2024-11-23T14:48:47.281909Z",
+            "sender_id": 15,
+            "receiver_id": 16
+        }
+    ],
+    "notification": "You have 1 unread messages."
+}
+```
+
+### Other Responses
+
+
+### **1. Validation Error Response**
+
+**HTTP Status:** `403 FORBIDDEN`
+
+```json
+{
+    "message":"You do not have permission to perform this action."
+}
+```
+
+
+
+### Messages
+
+1. **Forbidden**
+```json
+{
+    "message":"You do not have permission to perform this action."
+}
+```
+
+
+---
+
+## 2. Create New match found notification
+
+* `URL`:  http://127.0.0.1:8000/notification/newmatch/
+
+* `Method` : POST
+
+* `Description`:It sends a 'New Match Found' notification to all active users with a subscription plan of Premium or Platinum, whose preferred gender matches the gender of the new profile.
+* 
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+
+
+### Example Request
+```json
+```http
+POST /newmatch HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+{
+    {
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
+}
+}
+```
+### Example Reponse
+
+1.` HTTP Status: 201 CREATED`
+```json
+"message": "Notifications sent successfully to all matched users."
+```
+
+
+### Other Responses
+
+### **1. Unauthorized Request**
+
+**HTTP Status:** `204 NO CONTENT`
+
+```json
+{
+    "error": "No users found whose preferences match the new profile's gender."
+    }
+```
+
+
+### Messages
+
+1. **No Content**
+```json
+{
+    "error": "No users found whose preferences match the new profile's gender."
+}
+```
+
+
+## 3. Sending bulk notification to all users.
+
+* `URL`: http://127.0.0.1:8000/notification/bulk/
+
+* `Method` : POST
+
+* `Description`:Sending notification to all active users.
+
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+POST/notification/bulk HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
+}
+
+```
+`Request Payload`
+```json
+{
+    "message_title":"Christmas",
+    "message_content": "Wishing you a Merry Christmas and a Happy New Year! 🎄🎉"
+}
+```
+### Example Reponse
+
+1.` HTTP Status: 201 CREATED`
+```
+{
+    "message": "Christmas message sent successfully to all active users."
+    }
+```
+
+
+### Other Responses
+
+### **1. Required Fields are missing**
+
+**HTTP Status:** `400 BAD REQUEST`
+
+```json
+    {
+    "error": "message_title and message_content are required."
+}
+
+```
+
+### **2. No active Users Found**
+
+**HTTP Status:** `204 NO CONTENT`
+
+```json
+{
+    "error": "No active users found."
+    }
+```
+
+### Messages
+
+1. **Required Fields are missing**
+```json
+    {
+    "error": "message_title and message_content are required."
+}"
+```
+## 4. Sending notifications while modifying master data.
+
+* `URL`:  http://127.0.0.1:8000/notification/addmaster/
+
+* `Method` : POST
+
+* `Description`: Send notification to active users while modifying master data.
+
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /notification/addmaster HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
+}
+
+```
+```Request Payload```
+{
+  "type_id": 14,    
+  "value": "GENERAL"
+}
+
+### Example Reponse
+
+1.` HTTP Status: 201 CREATED`
+```
+{
+    "message": New caste value 'GENERAL' added successfully and notifications sent."
+}
+```
+
+
+### Other Responses
+
+### **1. Validation Error**
+
+**HTTP Status:** `400 BAD REQUEST`
+
+```json
+{
+   "error": "Invalid type_id."
+}
+```
+
+
+
+### Messages
+
+1. **Validation Error**
+```json
+{
+    "message": "Invalid type_id"
+}
+```
+
+## 5. Send Reminder Notification For Subscription Expiry 
+
+* `URL`:  http://127.0.0.1:8000/notification/notifyexpiring/
+
+* `Method` : POST
+
+* `Description`: Sending Subscription Reminder.
+
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /notification/notifyexpiring/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
+}
+
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```
+{
+"message": f"Notifications sent to 1 user(s) with expiring subscriptions."
+}
+```
+
+
+### Other Responses
+
+### **1. No Subscription expiry**
+
+**HTTP Status:** `200 OK`
+
+```json
+{
+   "message": "No subscriptions expiring within the next 2 days."
+}
+```
+
+
+### Messages
+
+1. **No  Subscription expiry**
+```json
+{
+    "message": "No subscriptions expiring within the next 2 days."
+}
+```
+---
+
+
+
+# API Endpoints of Message app
+
+## 1. Create Message
+
+* `URL`:  http://localhost:8000/message/
+
+* `Method` : POST
+
+* `Description`: Create message with fields sender_id,receiver_id,message_title,content.
+
+* `Content-type`:
+  
+        Content-Type : application/json
+
+
+
+
+### `Message` Model
+
+
+# Notification Model
+
+# Message Model
+
+| **Field Name**   | **Data Type**       | **Constraints**                                    | **Relationship**                          | **Description**                                                                          |
+|-------------------|---------------------|----------------------------------------------------|-------------------------------------------|------------------------------------------------------------------------------------------|
+| `message_id`      | `AutoField`         | `primary_key=True`                                 | None                                      | Auto-generated unique identifier for each message.                                       |
+| `sender_id`       | `ForeignKey`        | `on_delete=DO_NOTHING`, `null=True`, `blank=True`  | Foreign key to `CustomUser`, related name: `sender`   | Links the message to the sender (user who sent the message).                             |
+| `receiver_id`     | `ForeignKey`        | `on_delete=DO_NOTHING`, `null=True`, `blank=True`  | Foreign key to `CustomUser`, related name: `receiver` | Links the message to the receiver (user who received the message).                       |
+| `content`         | `TextField`         | None                                               | None                                      | The content/body of the message.                                                        |
+| `status`          | `CharField`         | `max_length=10`, choices: `read`, `unread`, `default='unread'` | None             | Indicates whether the message has been read or is still unread.                          |
+| `created_on`      | `DateTimeField`     | `auto_now_add=True`                                | None                                      | Automatically records the date and time when the message is created.                     |
+| `updated_on`      | `DateTimeField`     | `auto_now=True`                                    | None                                      | Automatically updates the date and time when the message is modified.                    |
+| `received_at`     | `DateTimeField`     | `auto_now_add=True`                                | None                                      | Records the exact date and time when the message is received.                            |
+
+
+
+
+
+### Example Request
+
+```http
+POST/message/ HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+```
+```json
+{
+    {
+    "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
+}
+}
+```
+
+
+```Request Payload```
+
+```json
+{
+    "receiver_id":16,
+    "content":"How are you"
+}
+```
+
+
+### Example Reponse
+
+1.` HTTP Status: 201 CREATED`
+```json
+{
+    "message": "Message Sent Successfully"
+}
+```
+
+### Other Responses
+
+
+### **1. Trying to message without subscription**
+
+**HTTP Status:** `403 FORBIDDEN`
+
+```json
+{
+   {
+    "error": "You need a subscription to send messages."
+   }
+}
+```
+
+### **1. Trying to message after reaching the limit of the subscription**
+
+**HTTP Status:** `403 FORBIDDEN`
+
+```json
+
+   {
+    "error": "You have reached your message limit of 10 for your subscription plan."
+    }
+
+```
+
+
+### Messages
+
+1. **Forbidden**
+```json
+{
+    "error": "You have reached your message limit of 10 for your subscription plan."
+    }
+```
+
+
+---
+
+## 2. Viewing the message by receiver
+
+* `URL`:  http://localhost:8000/message/getnewmessages
+
+* `Method` : GET
+
+* `Description`:The receiver retrieves the uread messages
+* 
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+
+
+### Example Request
+```json
+```http
+GET /getnewmessages HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+{
+    {
+    "Authorization": "Token 0340b35216c3dcb68f0ebd023b32f2e98d389b66"
+}
+}
+```
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+
+[
+    {
+        "message_id": 19,
+        "content": "How are you",
+        "status": "read",
+        "created_on": "2024-11-23T14:48:47.281909Z",
+        "updated_on": "2024-11-23T14:48:47.281909Z",
+        "received_at": "2024-11-23T14:48:47.281909Z",
+        "sender_id": 15,
+        "receiver_id": 16
+    }
+]
+
+```
+
+
+### Other Responses
+
+### **1. Invalid Token**
+
+**HTTP Status:** `401 UNAUTHORIZED`
+
+```json
+{
+    "detail": "Invalid token."
+}
+```
+
+
+### Messages
+
+1. **Invalid Token**
+```json
+{
+    "detail": "Invalid token."
+}
+```
+
+
+## 3. Viewing all the message details by receiver.
+
+* `URL`:http://localhost:8000/message/
+
+* `Method` : GET
+
+* `Description`:Retreiving all message details by receiver.
+  
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET/message/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
+}
+
+```
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+[
+    {
+        "message_id": 14,
+        "content": "Hii",
+        "status": "read",
+        "created_on": "2024-11-21T09:53:49.632531Z",
+        "updated_on": "2024-11-21T09:53:49.632531Z",
+        "received_at": "2024-11-21T09:53:49.632531Z",
+        "sender_id": 34,
+        "receiver_id": 33
+    },
+    {
+        "message_id": 15,
+        "content": "Hii",
+        "status": "unread",
+        "created_on": "2024-11-22T04:23:03.623591Z",
+        "updated_on": "2024-11-22T04:23:03.624515Z",
+        "received_at": "2024-11-22T04:23:03.624515Z",
+        "sender_id": 34,
+        "receiver_id": 17
+    },
+    {
+        "message_id": 16,
+        "content": "Hii",
+        "status": "read",
+        "created_on": "2024-11-22T06:54:22.892051Z",
+        "updated_on": "2024-11-22T06:54:22.893055Z",
+        "received_at": "2024-11-22T06:54:22.893055Z",
+        "sender_id": 34,
+        "receiver_id": 33
+    },
+    {
+        "message_id": 19,
+        "content": "How are you",
+        "status": "read",
+        "created_on": "2024-11-23T14:48:47.281909Z",
+        "updated_on": "2024-11-23T14:48:47.281909Z",
+        "received_at": "2024-11-23T14:48:47.281909Z",
+        "sender_id": 15,
+        "receiver_id": 16
+    }
+]
+```
+
+
+### Other Responses
+
+### **1. Invalid Token**
+
+**HTTP Status:** `401 UNAUTHORIZED`
+
+```json
+{
+    "detail": "Invalid token."
+}
+```
+
+
+### Messages
+
+1. **Invalid Token**
+```json
+    {
+    "detail": "Invalid token."
+}
+```
+
+## 4. Viewing all unread message.
+
+* `URL`:  http://localhost:8000/message/unreadmessages/
+
+* `Method` : GET
+
+* `Description`: Retreiving the unread message by receiver.
+
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /message/unreadmessages/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token be0f52047aef86577f2c1b17d3d3ee595f0878f0"
+}
+
+```
+
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+{
+        "message_id": 16,
+        "content": "Hii",
+        "status": "read",
+        "created_on": "2024-11-22T06:54:22.892051Z",
+        "updated_on": "2024-11-22T06:54:22.893055Z",
+        "received_at": "2024-11-22T06:54:22.893055Z",
+        "sender_id": 34,
+        "receiver_id": 33
+    }
+```
+
+
+### Other Responses
+
+### **1. Invalid data**
+
+**HTTP Status:** `400 BAD REQUEST`
+
+```json
+{
+   "detail": "Invalid token."
+}
+```
+
+
+
+### Messages
+
+1. **Invalid Token**
+```json
+{
+    "message": "Invalid token."
+}
+```
+
+## 5. Viewing new match notification
+
+* `URL`:  http://localhost:8000/message/viewmatch/
+
+* `Method` : GET
+
+* `Description`: Viewing new match notification.
+  
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /message/viewmatch/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 0340b35216c3dcb68f0ebd023b32f2e98d389b66"
+}
+
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+{
+"message": "New match notification send successfully"
+}
+```
+
+
+### Other Responses
+
+### **1. No Match notification found.**
+
+**HTTP Status:** `204 NO CONTENT`
+
+```json
+{
+   "message": "No match notifications found."
+}
+```
+
+
+### Messages
+
+1. **No Match notification found.**
+```json
+{
+    "message": "No match notifications found."
+}
+```
+---
+
+
+## 6. Viewing the notification of master table modification
+
+* `URL`:http://localhost:8000/message/viewmaster/
+
+* `Method` : GET
+
+* `Description`: Viewing the notification of master table modification.
+  
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /message/viewmaster/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
+}
+
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+{
+{
+    "notifications": [
+        {
+            "id": 36,
+            "title": "New caste Value Added",
+            "content": "A new value has been added to caste: GENERAL.",
+            "status": "Read",
+            "created_on": "2024-11-22T06:56:55.497599Z"
+        }
+    ]
+}
+}
+```
+
+
+### Other Responses
+
+### **1. No modification notification found.**
+
+**HTTP Status:** `204 NO CONTENT`
+
+```json
+{
+   "message": "No MasterTable change notifications found."
+}
+```
+
+
+### Messages
+
+1. **No Bulk notification found.**
+```json
+{
+   "message": "No MasterTable change notifications found."
+}
+```
+---
+
+
+## 7. View suscription plan expiry reminder
+
+* `URL`:http://localhost:8000/message/viewreminder/
+
+* `Method` : GET
+
+* `Description`: Viewing suscription plan expiry reminder
+  
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /message/viewreminder/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
+}
+
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+{
+{
+    "message_notifications": [
+        {
+            "id": 41,
+            "title": "Subscription Expiry Reminder",
+            "content": "Your subscription plan 'basic' will expire on 2024-11-25. Please renew to continue enjoying our services.",
+            "status": "Read",
+            "created_on": "2024-11-23 07:38:51.598254"
+        }
+    ]
+}
+}
+```
+
+
+### Other Responses
+
+### **1. No Reminder notification found.**
+
+**HTTP Status:** `204 NO CONTENT`
+
+```json
+{
+   "message": "No Reminder notifications found."
+}
+```
+
+
+### Messages
+
+1. **No Reminder notifications found.**
+```json
+{
+   "message": "No Reminder notifications found."
+}
+```
+---
+
+
+## 8. Viewing Bulk message notification
+
+* `URL`:http://127.0.0.1:8000/message/viewbulk
+
+* `Method` : GET
+
+* `Description`: Viewing bulk message notification.
+  
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /message/viewbulk/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
+}
+
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+{
+{
+    "message_notifications": [
+        {
+            "id": 31,
+            "title": "Christmas",
+            "content": "Wishing you a Merry Christmas and a Happy New Year! 🎄🎉",
+            "status": "Read",
+            "created_on": "2024-11-22T06:56:33.272838Z"
+        }
+    ]
+}
+}
+```
+
+
+### Other Responses
+
+### **1. No Bulk notification found.**
+
+**HTTP Status:** `204 NO CONTENT`
+
+```json
+{
+   "message": "No bulk notifications found."
+}
+```
+
+
+### Messages
+
+1. **No Bulk notification found.**
+```json
+{
+   "message": "No bulk notifications found."
+}
+```
+---
+
 

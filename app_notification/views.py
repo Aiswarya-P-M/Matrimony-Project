@@ -94,7 +94,7 @@ class NewMatchNotificationView(APIView):
                 continue  # Skip users without preferences
 
         if not matched_users:
-            return Response({"error": "No users found whose preferences match the new profile's gender."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "No users found whose preferences match the new profile's gender."}, status=status.HTTP_204_NO_CONTENT)
 
         # Create the notification message with the new profile's user_id
         notification_message = f"Congratulations! A new match has been found: User ID {new_profile_user_id}."
@@ -133,7 +133,7 @@ class BulkMessageNotificationView(APIView):
         active_users = CustomUser.objects.filter(is_active=True,is_admin=False)
 
         if not active_users.exists():
-            return Response({"error": "No active users found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "No active users found."}, status=status.HTTP_204_NO_CONTENT)
 
         # Create a notification for each active user
         for user in active_users:

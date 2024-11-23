@@ -110,7 +110,7 @@ class ViewMatchNotification(APIView):
         ).order_by('-created_on')
 
         if not notifications.exists():
-            return Response({"message": "No match notifications found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "No match notifications found."}, status=status.HTTP_204_NO_CONTENT)
 
         # Update unread notifications to read
         notifications.filter(status="Unread").update(status="Read")
@@ -145,7 +145,7 @@ class ViewBulkMessages(APIView):
         ).order_by('-created_on')
 
         if not notifications.exists():
-            return Response({"message": "No bulk notifications found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "No bulk notifications found."}, status=status.HTTP_204_NO_CONTENT)
 
         # Mark notifications as "Read"
         notifications.filter(status="Unread").update(status="Read")
@@ -184,7 +184,7 @@ class ViewMasterTableNotification(APIView):
         ).order_by('-created_on')
 
         if not notifications.exists():
-            return Response({"message": "No MasterTable change notifications found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "No MasterTable change notifications found."}, status=status.HTTP_204_NO_CONTENT)
 
         # Mark notifications as "Read" by updating their status
         notifications.filter(status="Unread").update(status="Read")
@@ -218,7 +218,7 @@ class ViewRemindernotification(APIView):
         ).order_by('-created_on')
 
         if not notifications.exists():
-            return Response({"message": "No Reminder notifications found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "No Reminder notifications found."}, status=status.HTTP_204_NO_CONTENT)
 
         # Mark notifications as "Read" by updating their status
         notifications.filter(status="Unread").update(status="Read")
