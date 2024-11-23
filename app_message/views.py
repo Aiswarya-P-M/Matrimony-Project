@@ -12,16 +12,52 @@ from app_notification.models import Notification
 from app_notification.serializers import NotificationSerializer
 
 class CreateMessageView(APIView):
-    permission_classes= [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        request.data['sender_id'] = request.user.user_id  # 
-        serializer= MessageSerializers(data=request.data)
+        # Get the sender (authenticated user) and their subscription plan
+        sender = request.user
+        subscription = sender.subscription_plan
+
+        # Set message limits based on the subscription plan
+        if subscription:
+            if subscription.plan_type == 'basic':
+                message_limit = 10
+            elif subscription.plan_type == 'premium':
+                message_limit = 40
+            elif subscription.plan_type == 'platinum':
+                message_limit = None  # Unlimited messages
+            else:
+                message_limit = 0  # Default to no messages for invalid plans
+        else:
+            return Response(
+                {"error": "You need a subscription to send messages."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Count messages sent by the user
+        sent_messages_count = Message.objects.filter(sender_id=sender.user_id).count()
+
+        # Check if the user has exceeded their message limit
+        if message_limit is not None and sent_messages_count >= message_limit:
+            return Response(
+                {"error": f"You have reached your message limit of {message_limit} for your subscription plan."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Set sender_id in the request data and validate the serializer
+        request.data['sender_id'] = sender.user_id
+        serializer = MessageSerializers(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
-            return Response({"message":"Message Sent Successfully"},status=status.HTTP_201_CREATED)
+            return Response(
+                {"message": "Message Sent Successfully"},
+                status=status.HTTP_201_CREATED
+            )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def get(self,request):
         messages = Message.objects.all()
@@ -170,4 +206,36 @@ class ViewMasterTableNotification(APIView):
             status=status.HTTP_200_OK
         )
 
+class ViewRemindernotification(APIView):
+    permission_classes =  [permissions.IsAuthenticated]
 
+    def get(self,request):
+        user = request.user
+
+        notifications = Notification.objects.filter(
+            receiver_id=user.user_id,
+            notification_title__icontains="Reminder"  # Filter by notification title
+        ).order_by('-created_on')
+
+        if not notifications.exists():
+            return Response({"message": "No Reminder notifications found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Mark notifications as "Read" by updating their status
+        notifications.filter(status="Unread").update(status="Read")
+
+        # Serialize the notifications
+        serialized_notifications = [
+            {
+                "id": notification.notification_id,
+                "title": notification.notification_title,
+                "content": notification.notification_content,
+                "status": notification.status,
+                "created_on": notification.created_on,
+            }
+            for notification in notifications
+        ]
+
+        return Response(
+            {"notifications": serialized_notifications},
+            status=status.HTTP_200_OK
+        )

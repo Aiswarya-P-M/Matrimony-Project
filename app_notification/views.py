@@ -1,5 +1,5 @@
 # from django.contrib.auth import get_user_model
-
+from datetime import datetime, timedelta
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -196,3 +196,44 @@ class AddMasterTableEntryAndNotify(APIView):
 
 
 
+# Reminder to users whose subscription will expire within 2 days.
+
+class NotifyExpiringSubscriptionsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Check if the user has the necessary permissions (admin, staff, superuser)
+        if not (request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+            return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Calculate the date 2 days from now
+        notification_date = datetime.now().date() + timedelta(days=2)
+
+        # Fetch users whose subscription plans are expiring in 2 days
+        expiring_users = CustomUser.objects.filter(
+            is_active=True, 
+            subscription_plan__end_date=notification_date,
+            subscription_plan__status='active'
+        )
+
+        # If no users are found, return a message
+        if not expiring_users.exists():
+            return Response({"message": "No subscriptions expiring within the next 2 days."}, status=status.HTTP_200_OK)
+
+        # Send notifications to each user
+        for user in expiring_users:
+            notification_message = (
+                f"Your subscription plan '{user.subscription_plan.plan_type}' will expire on {user.subscription_plan.end_date}. "
+                "Please renew to continue enjoying our services."
+            )
+            Notification.objects.create(
+                receiver_id=user.user_id,  # Assuming Notification model has receiver_id
+                notification_title="Subscription Expiry Reminder",
+                notification_content=notification_message,
+                status="Unread"
+            )
+
+        return Response(
+            {"message": f"Notifications sent to {expiring_users.count()} user(s) with expiring subscriptions."},
+            status=status.HTTP_200_OK
+        )
