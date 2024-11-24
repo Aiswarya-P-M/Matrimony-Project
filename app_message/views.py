@@ -62,11 +62,16 @@ class CreateMessageView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#2. Retrieve all messages
-    def get(self,request):
-        messages = Message.objects.all()
+#2. Retrieve all the read message by receiver
+    def get(self, request):
+    # Filter messages where the logged-in user is the recipient
+        messages = Message.objects.filter(receiver_id=request.user, status='read')
+        
+        # Serialize the filtered messages
         serializer = MessageSerializers(messages, many=True)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 #3. Message Viewed by receiver
 
@@ -147,7 +152,7 @@ class ViewBulkMessages(APIView):
         # Filter notifications with title "Christmas" for the logged-in user
         notifications = Notification.objects.filter(
             receiver_id=request.user.user_id,
-            notification_title="Christmas"  # Change this to the actual title you want to match
+            notification_title="New year greetings"  # Change this to the actual title you want to match
         ).order_by('-created_on')
 
         if not notifications.exists():

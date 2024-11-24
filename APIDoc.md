@@ -3645,9 +3645,9 @@ Content-Type: application/json
 ```
 ```json
 {
-    {
+    
     "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
-}
+    
 }
 ```
 
@@ -3680,9 +3680,9 @@ Content-Type: application/json
 
 ```json
 {
-   {
+   
     "error": "You need a subscription to send messages."
-   }
+   
 }
 ```
 
@@ -3733,9 +3733,9 @@ GET /getnewmessages HTTP/1.1
 Host: api.example.com
 Content-Type:  application/json
 {
-    {
+    
     "Authorization": "Token 0340b35216c3dcb68f0ebd023b32f2e98d389b66"
-}
+
 }
 ```
 ### Example Reponse
@@ -3782,7 +3782,7 @@ Content-Type:  application/json
 ```
 
 
-## 3. Viewing all the message details by receiver.
+## 3. Viewing all the read message receiver.
 
 * `URL`:http://localhost:8000/message/
 
@@ -3813,42 +3813,22 @@ Content-Type:  application/json
 ```json
 [
     {
-        "message_id": 14,
-        "content": "Hii",
-        "status": "read",
-        "created_on": "2024-11-21T09:53:49.632531Z",
-        "updated_on": "2024-11-21T09:53:49.632531Z",
-        "received_at": "2024-11-21T09:53:49.632531Z",
-        "sender_id": 34,
-        "receiver_id": 33
-    },
-    {
-        "message_id": 15,
-        "content": "Hii",
-        "status": "unread",
-        "created_on": "2024-11-22T04:23:03.623591Z",
-        "updated_on": "2024-11-22T04:23:03.624515Z",
-        "received_at": "2024-11-22T04:23:03.624515Z",
-        "sender_id": 34,
-        "receiver_id": 17
-    },
-    {
-        "message_id": 16,
-        "content": "Hii",
-        "status": "read",
-        "created_on": "2024-11-22T06:54:22.892051Z",
-        "updated_on": "2024-11-22T06:54:22.893055Z",
-        "received_at": "2024-11-22T06:54:22.893055Z",
-        "sender_id": 34,
-        "receiver_id": 33
-    },
-    {
         "message_id": 19,
         "content": "How are you",
         "status": "read",
         "created_on": "2024-11-23T14:48:47.281909Z",
         "updated_on": "2024-11-23T14:48:47.281909Z",
         "received_at": "2024-11-23T14:48:47.281909Z",
+        "sender_id": 15,
+        "receiver_id": 16
+    },
+    {
+        "message_id": 20,
+        "content": "How are you",
+        "status": "read",
+        "created_on": "2024-11-23T16:11:59.952831Z",
+        "updated_on": "2024-11-23T16:11:59.952831Z",
+        "received_at": "2024-11-23T16:11:59.952831Z",
         "sender_id": 15,
         "receiver_id": 16
     }
