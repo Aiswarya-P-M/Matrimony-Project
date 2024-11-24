@@ -11,6 +11,7 @@ from app_user.models import CustomUser
 from .models import Matching
 from .utils import calculate_match_score  # <-- Import the utility function
 
+#1. Matching between 2 users
 
 class FindMatchView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -71,6 +72,8 @@ class FindMatchView(APIView):
             'status': status
         }, status=201)
 
+#2. Find all possible matches
+
 class FindAllMatchesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -93,6 +96,7 @@ class FindAllMatchesView(APIView):
                 continue
 
             try:
+                #fetch the UserProfile of the other_user.
                 other_user_profile = UserProfile.objects.get(user_id=other_user.user_id)
                 match_score = calculate_match_score(user_preference, other_user_profile)
                 

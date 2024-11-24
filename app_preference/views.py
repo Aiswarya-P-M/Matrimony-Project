@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from .models import Preference
 from .serializers import Preferenceserializers
 
+#1. Creating Preference
 
 class PreferenceCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -30,6 +31,8 @@ class PreferenceCreateView(APIView):
     #     serializer=Preferenceserializers(paginated_preference,many=True)
     #     return paginator.get_paginated_response(serializer.data)
 
+#2. Get Preference by id
+
 class PreferencebyIdView(APIView):
     permission_classes= [permissions.IsAuthenticated]
     def get(self, request):
@@ -40,7 +43,9 @@ class PreferencebyIdView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Preference.DoesNotExist:
             return Response({"message": "preference not found"}, status=status.HTTP_404_NOT_FOUND)
-    
+
+#3.  Update Preference
+
     def put(self, request):
         try:
             preference = Preference.objects.get(user_id=request.user.user_id)

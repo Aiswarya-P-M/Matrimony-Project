@@ -212,16 +212,29 @@ class NotifyExpiringSubscriptionsView(APIView):
         # Fetch users whose subscription plans are expiring in 2 days
         expiring_users = CustomUser.objects.filter(
             is_active=True, 
-            subscription_plan__end_date=notification_date,
             subscription_plan__status='active'
         )
 
+        # Loop through the users to check for subscriptions expiring in 2 days
+        expiring_users_to_notify = []
+        for user in expiring_users:
+            subscription = user.subscription_plan
+
+            # Calculate the effective end date based on the user's joined date
+            joined_date = user.joined_date  # Assuming 'joined_date' is the user's date_joined field
+            subscription_duration = subscription.end_date - subscription.start_date
+            effective_end_date = joined_date + timedelta(days=subscription_duration.days)
+
+            # Check if the subscription expires in 2 days
+            if effective_end_date == notification_date:
+                expiring_users_to_notify.append(user)
+
         # If no users are found, return a message
-        if not expiring_users.exists():
+        if not expiring_users_to_notify:
             return Response({"message": "No subscriptions expiring within the next 2 days."}, status=status.HTTP_200_OK)
 
         # Send notifications to each user
-        for user in expiring_users:
+        for user in expiring_users_to_notify:
             notification_message = (
                 f"Your subscription plan '{user.subscription_plan.plan_type}' will expire on {user.subscription_plan.end_date}. "
                 "Please renew to continue enjoying our services."
@@ -234,6 +247,6 @@ class NotifyExpiringSubscriptionsView(APIView):
             )
 
         return Response(
-            {"message": f"Notifications sent to {expiring_users.count()} user(s) with expiring subscriptions."},
+            {"message": f"Notifications sent to {len(expiring_users_to_notify)} user(s) with expiring subscriptions."},
             status=status.HTTP_200_OK
         )

@@ -8,6 +8,7 @@ class MatchingTableSerializer(serializers.ModelSerializer):
 
 class MasterTableSerializer(serializers.ModelSerializer):
     # You can include the related CommonMatchingTable serializer if needed
+    #is used to handle relationships between models in a serializer.
     type = serializers.PrimaryKeyRelatedField(queryset=CommonMatchingTable.objects.all())
     class Meta:
         model = MasterTable
