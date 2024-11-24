@@ -1,15 +1,15 @@
 # **API Documentation**
 
-This project mainly consists of 8 apps and 47 api endpoints.
+This project mainly consists of 8 apps and 42 api endpoints.
 
 1. User app - 11
-2. UserProfile app - 
-3. Preference app - 
-4. Matching app - 
-5. Message app -
-6. Notification app -
-7. Subscription app -
-8. Commonmatching app -
+2. UserProfile app - 5
+3. Preference app - 3
+4. Matching app - 2
+5. Message app - 7
+6. Notification app - 5
+7. Subscription app - 5
+8. Commonmatching app - 4
 
 
 # API Endpoints of User app
@@ -3878,74 +3878,8 @@ Content-Type:  application/json
 }
 ```
 
-## 4. Viewing all unread message.
 
-* `URL`:  http://localhost:8000/message/unreadmessages/
-
-* `Method` : GET
-
-* `Description`: Retreiving the unread message by receiver.
-
-* `Content-type`:
-  
-        Content-Type: application/json
-
-
-### Example Request
-```json
-```http
-GET /message/unreadmessages/ HTTP/1.1
-Host: api.example.com
-Content-Type:  application/json
-
-    {
-    "Authorization": "Token be0f52047aef86577f2c1b17d3d3ee595f0878f0"
-}
-
-```
-
-
-### Example Reponse
-
-1.` HTTP Status: 200 OK`
-```json
-{
-        "message_id": 16,
-        "content": "Hii",
-        "status": "read",
-        "created_on": "2024-11-22T06:54:22.892051Z",
-        "updated_on": "2024-11-22T06:54:22.893055Z",
-        "received_at": "2024-11-22T06:54:22.893055Z",
-        "sender_id": 34,
-        "receiver_id": 33
-    }
-```
-
-
-### Other Responses
-
-### **1. Invalid data**
-
-**HTTP Status:** `400 BAD REQUEST`
-
-```json
-{
-   "detail": "Invalid token."
-}
-```
-
-
-
-### Messages
-
-1. **Invalid Token**
-```json
-{
-    "message": "Invalid token."
-}
-```
-
-## 5. Viewing new match notification
+## 4. Viewing new match notification
 
 * `URL`:  http://localhost:8000/message/viewmatch/
 
@@ -4005,7 +3939,7 @@ Content-Type:  application/json
 ---
 
 
-## 6. Viewing the notification of master table modification
+## 5. Viewing the notification of master table modification
 
 * `URL`:http://localhost:8000/message/viewmaster/
 
@@ -4075,7 +4009,7 @@ Content-Type:  application/json
 ---
 
 
-## 7. View suscription plan expiry reminder
+## 6. View suscription plan expiry reminder
 
 * `URL`:http://localhost:8000/message/viewreminder/
 
@@ -4145,7 +4079,7 @@ Content-Type:  application/json
 ---
 
 
-## 8. Viewing Bulk message notification
+## 7. Viewing Bulk message notification
 
 * `URL`:http://127.0.0.1:8000/message/viewbulk
 

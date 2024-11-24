@@ -11,6 +11,10 @@ from .serializers import MessageSerializers
 from app_notification.models import Notification
 from app_notification.serializers import NotificationSerializer
 
+
+
+#1. Create Message 
+
 class CreateMessageView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -58,12 +62,13 @@ class CreateMessageView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+#2. Retrieve all messages
     def get(self,request):
         messages = Message.objects.all()
         serializer = MessageSerializers(messages, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+#3. Message Viewed by receiver
 
 class MessagebyReceiverView(APIView):
     # Ensure the user is authenticated
@@ -87,14 +92,15 @@ class MessagebyReceiverView(APIView):
     
 
 
-class UnreadMessageView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    def get(self,request):
-        messages=Message.objects.filter(sender_id=request.user,status='unread').order_by('-created_on')
-        serializer=MessageSerializers(messages, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class UnreadMessageView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     def get(self,request):
+#         messages=Message.objects.filter(sender_id=request.user,status='unread').order_by('-created_on')
+#         serializer=MessageSerializers(messages, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+#4. View new match notification 
 
 class ViewMatchNotification(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -132,7 +138,7 @@ class ViewMatchNotification(APIView):
             status=status.HTTP_200_OK
         )
 
-# Bulk message viewing by users
+#5. Bulk message viewing by users
 
 class ViewBulkMessages(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -168,7 +174,7 @@ class ViewBulkMessages(APIView):
         )
 
 
-# viewing the master table changes notification
+#6. viewing the master table changes notification
 class ViewMasterTableNotification(APIView):
     permission_classes=[permissions.IsAuthenticated]
 
@@ -205,6 +211,9 @@ class ViewMasterTableNotification(APIView):
             {"notifications": serialized_notifications},
             status=status.HTTP_200_OK
         )
+
+
+#7. Viewing the reminder notification
 
 class ViewRemindernotification(APIView):
     permission_classes =  [permissions.IsAuthenticated]

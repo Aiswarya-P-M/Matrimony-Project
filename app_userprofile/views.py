@@ -12,7 +12,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import UserProfile
 from .serializers import UserProfileserializers
 
-
+# 1. creating a profile
 class CreateProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
@@ -29,7 +29,7 @@ class CreateProfileView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-    
+# 2. Viewing the details of all profile
     def get(self, request):
         profile=UserProfile.objects.all()
         paginator = PageNumberPagination()
@@ -38,6 +38,8 @@ class CreateProfileView(APIView):
         serializer=UserProfileserializers(paginated_profile, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+
+#3. get profile details of specific user
 class ProfileDetailsView(APIView):
     permission_classes=[permissions.IsAuthenticated]
     def get(self, request):
@@ -48,7 +50,9 @@ class ProfileDetailsView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except UserProfile.DoesNotExist:
             return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
-    
+
+#4. Update Profile details
+
     def put(self, request):
         try:
             # Use user_id instead of id
@@ -61,6 +65,7 @@ class ProfileDetailsView(APIView):
         except UserProfile.DoesNotExist:
             return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
+#5. Delete Profile
     def delete(self,request,user_id):
         try:
             profile=UserProfile.objects.get(user_id=user_id)

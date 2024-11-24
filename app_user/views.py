@@ -63,6 +63,7 @@ class UserLogoutView(APIView):
         request.user.auth_token.delete()
         return Response({'message':'Logout Successfully'},status=status.HTTP_200_OK)
 
+
 #4. get user details by id
 
 class UserdetailsView(APIView):
@@ -71,6 +72,7 @@ class UserdetailsView(APIView):
         user = request.user  # Get the authenticated user from the token
         serializer = CustomUserserializers(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 #5. update user details
 
@@ -177,6 +179,7 @@ class UserListView(APIView):
 
         return paginator.get_paginated_response(serializer.data)
 
+# 2. Deactivate user
 
 class DeactivateUserbyAdminView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -204,6 +207,7 @@ class DeactivateUserbyAdminView(APIView):
 
         return Response({'message': f'User {user.username} deactivated successfully.'}, status=status.HTTP_200_OK)
 
+#3.List all the active users
 
 class ActiveUsersListView(APIView):
     permission_classes = [permissions.IsAuthenticated]  # Ensure the user is authenticated
@@ -231,6 +235,7 @@ class ActiveUsersListView(APIView):
 
         return paginator.get_paginated_response(serializer.data)
 
+#4.List all the inactive users
 
 class InactiveUsersListView(APIView):
     def get(self,request):

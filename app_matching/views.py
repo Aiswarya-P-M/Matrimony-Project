@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
 from rest_framework import permissions, status
@@ -36,8 +36,8 @@ class FindMatchView(APIView):
 
 
         # Get user1 and user2
-        user1 = get_object_or_404(CustomUser, user_id=user1_id)
-        user2 = get_object_or_404(CustomUser, user_id=user2_id)
+        user1 = CustomUser.objects.get(user_id=user1_id)
+        user2 = CustomUser.objects.get(user_id=user2_id)
 
         # Get user profiles and preferences
         try:
@@ -88,7 +88,7 @@ class FindAllMatchesView(APIView):
 
         # Loop through all users (excluding the logged-in user)
         all_users = CustomUser.objects.all()
-        for other_user in all_users:
+        for other_user in all_users: # Check if the current user in the loop is the logged-in user
             if other_user.user_id == user.user_id:  # Skip the logged-in user
                 continue
 
