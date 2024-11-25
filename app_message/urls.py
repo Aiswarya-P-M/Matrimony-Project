@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     CreateMessageView,MessagebyReceiverView, ViewMatchNotification,
-    ViewBulkMessages, ViewMasterTableNotification, ViewRemindernotification
+    ViewBulkMessages, ViewMasterTableNotification, ViewRemindernotification,NewSubscriptionNotificationsView
 )
 urlpatterns=[
     path('',CreateMessageView.as_view(),name='message_creation'),
@@ -10,7 +10,8 @@ urlpatterns=[
     path('viewmatch/',ViewMatchNotification.as_view(),name='viewmatch'),
     path('viewbulk/', ViewBulkMessages.as_view(), name='viewbulk'),
     path('viewmaster/', ViewMasterTableNotification.as_view(), name='viewmaster'),
-    path('viewreminder/', ViewRemindernotification.as_view(), name='viewreminder')
+    path('viewreminder/', ViewRemindernotification.as_view(), name='viewreminder'),
+    path('newsubscription/', NewSubscriptionNotificationsView.as_view(), name='newsubscription')
     
     
    

@@ -63,6 +63,7 @@ class CreateMessageView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #2. Retrieve all the read message by receiver
+
     def get(self, request):
     # Filter messages where the logged-in user is the recipient
         messages = Message.objects.filter(receiver_id=request.user, status='read')
@@ -180,6 +181,7 @@ class ViewBulkMessages(APIView):
 
 
 #6. viewing the master table changes notification
+
 class ViewMasterTableNotification(APIView):
     permission_classes=[permissions.IsAuthenticated]
 
@@ -191,6 +193,7 @@ class ViewMasterTableNotification(APIView):
         # Get the notifications related to changes in the MasterTable for the logged-in user
         notifications = Notification.objects.filter(
             receiver_id=user.user_id,
+            #It is used to check whether a given title exists in a field's value, ignoring case differences.
             notification_title__icontains="Value Added"  # Filter by notification title
         ).order_by('-created_on')
 
@@ -253,3 +256,40 @@ class ViewRemindernotification(APIView):
             {"notifications": serialized_notifications},
             status=status.HTTP_200_OK
         )
+
+#8. Viewing the new subscription notification
+
+class NewSubscriptionNotificationsView(APIView):
+    """
+    API View for users to view notifications about new subscription plans and mark them as read.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Fetch notifications for the logged-in user about new subscription plans
+        user = request.user
+        notifications = Notification.objects.filter(
+            receiver_id=user.user_id,
+            notification_title__icontains="New Subscription Plan",
+            status="Unread"  # Fetch only unread notifications
+        ).order_by('-created_on')
+
+        if not notifications.exists():
+            return Response({"message": "No new notifications about subscription plans."}, status=status.HTTP_200_OK)
+
+        # Serialize the filtered notifications
+        notification_data = [
+            {
+                "id": notification.notification_id,
+                "title": notification.notification_title,
+                "content": notification.notification_content,
+                "status": notification.status,
+                "created_on": notification.created_on,
+            }
+            for notification in notifications
+        ]
+
+        # Mark all fetched notifications as "Read"
+        notifications.update(status="Read")
+
+        return Response({"notifications": notification_data}, status=status.HTTP_200_OK)

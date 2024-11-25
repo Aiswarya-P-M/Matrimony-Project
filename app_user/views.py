@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate,login
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import get_object_or_404
 
@@ -49,6 +49,7 @@ class UserLoginView(APIView):
         user = authenticate(username=username, password=password)
         # print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{user}")
         if user is not None and user.is_active:
+            login(request, user)
             # Get or create token for the authenticated user
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
@@ -158,7 +159,7 @@ class UserListView(APIView):
 
     def get(self, request):
         # Check if the user is an admin by checking is_admin, is_staff, or is_superuser
-        if not (request.user.is_admin or request.user.is_staff or request.user.is_superuser):
+        if not (request.user.is_admin):
             return Response({"error": "You do not have permission to view this data."}, status=403)
 
         # Get all users
@@ -188,7 +189,7 @@ class DeactivateUserbyAdminView(APIView):
         admin_user = request.user
 
         # Check if the logged-in user is an admin
-        if not (admin_user.is_admin and admin_user.is_staff and admin_user.is_superuser):
+        if not (admin_user.is_admin):
             return Response(
                 {'message': 'You do not have the necessary permissions to deactivate a user.'},
                 status=status.HTTP_403_FORBIDDEN
@@ -214,7 +215,7 @@ class ActiveUsersListView(APIView):
 
     def get(self, request):
         # Check if the user is an admin by checking is_admin, is_staff, or is_superuser
-        if not (request.user.is_admin or request.user.is_staff or request.user.is_superuser):
+        if not (request.user.is_admin):
             return Response({"error": "You do not have permission to view this data."}, status=403)
 
         # Get all users
@@ -239,8 +240,8 @@ class ActiveUsersListView(APIView):
 
 class InactiveUsersListView(APIView):
     def get(self,request):
-        # if not (request.user.is_admin or request.user.is_staff or request.user.is_superuser):
-        #     return Response({"error": "You do not have permission to view this data."}, status=403)
+        if not (request.user.is_admin):
+            return Response({"error": "You do not have permission to view this data."}, status=403)
 
         users=CustomUser.objects.filter(is_active=False)
         serializer=CustomUserserializers(users, many=True)

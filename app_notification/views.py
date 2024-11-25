@@ -1,5 +1,6 @@
 # from django.contrib.auth import get_user_model
 from datetime import datetime, timedelta
+from django.utils.timezone import now
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,7 +24,7 @@ class UnreadMessageNotificationView(APIView):
 
     def get(self, request, user_id):
         # Check if the request is made by an admin
-        if not (request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+        if not (request.user.is_admin):
             return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
         # Fetch unread messages for the given user
@@ -64,7 +65,7 @@ class NewMatchNotificationView(APIView):
 
     def post(self, request):
         # Ensure the user is an admin
-        if not (request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+        if not (request.user.is_admin):
             return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the latest profile created
@@ -112,14 +113,14 @@ class NewMatchNotificationView(APIView):
 
 
 
-# bulk message notification
+#3. bulk message notification
 
 class BulkMessageNotificationView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         # Ensure the user is an admin
-        if not (request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+        if not (request.user.is_admin):
             return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the festival name and message from the request
@@ -147,14 +148,14 @@ class BulkMessageNotificationView(APIView):
         return Response({"message": f"{message_title} message sent successfully to all active users."}, status=status.HTTP_201_CREATED)
 
 
-# Get notification to users while admin made any changes in the master table
+#4. Get notification to users while admin made any changes in the master table
 
 class AddMasterTableEntryAndNotify(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         # Check if the user has the necessary permissions (admin, staff, superuser)
-        if not (request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+        if not (request.user.is_admin):
             return Response({"error": "You do not have permission to do this action."}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the type_id and value from the request data
@@ -196,57 +197,99 @@ class AddMasterTableEntryAndNotify(APIView):
 
 
 
-# Reminder to users whose subscription will expire within 2 days.
+#5. Reminder to users whose subscription will expire within 2 days.
 
 class NotifyExpiringSubscriptionsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        # Check if the user has the necessary permissions (admin, staff, superuser)
-        if not (request.user.is_admin and request.user.is_staff and request.user.is_superuser):
+        # Check if the user has admin permissions
+        if not request.user.is_admin:
             return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
-        # Calculate the date 2 days from now
-        notification_date = datetime.now().date() + timedelta(days=2)
-
-        # Fetch users whose subscription plans are expiring in 2 days
-        expiring_users = CustomUser.objects.filter(
-            is_active=True, 
-            subscription_plan__status='active'
+        # Get all active subscriptions
+        expiring_subscriptions = Subscription.objects.filter(
+            status='active'
         )
 
-        # Loop through the users to check for subscriptions expiring in 2 days
-        expiring_users_to_notify = []
-        for user in expiring_users:
-            subscription = user.subscription_plan
+        # Filter subscriptions expiring in 2 days
+        expiring_soon_subscriptions = [
+            subscription for subscription in expiring_subscriptions if subscription.is_expiring_soon(days=2)
+        ]
 
-            # Calculate the effective end date based on the user's joined date
-            joined_date = user.joined_date  # Assuming 'joined_date' is the user's date_joined field
-            subscription_duration = subscription.end_date - subscription.start_date
-            effective_end_date = joined_date + timedelta(days=subscription_duration.days)
-
-            # Check if the subscription expires in 2 days
-            if effective_end_date == notification_date:
-                expiring_users_to_notify.append(user)
-
-        # If no users are found, return a message
-        if not expiring_users_to_notify:
+        # If no subscriptions are expiring soon, return a message
+        if not expiring_soon_subscriptions:
             return Response({"message": "No subscriptions expiring within the next 2 days."}, status=status.HTTP_200_OK)
 
-        # Send notifications to each user
-        for user in expiring_users_to_notify:
-            notification_message = (
-                f"Your subscription plan '{user.subscription_plan.plan_type}' will expire on {user.subscription_plan.end_date}. "
-                "Please renew to continue enjoying our services."
-            )
+        # Send notifications to users with expiring subscriptions
+        for subscription in expiring_soon_subscriptions:
+            user = CustomUser.objects.filter(subscription_plan=subscription).first()
+            if user:
+                Notification.objects.create(
+                    receiver_id=user.user_id,
+                    notification_title="Subscription Expiry Reminder",
+                    notification_content=(
+                        f"Your subscription plan '{subscription.plan_type}' will expire on {subscription.end_date}. "
+                        "Please renew to continue enjoying our services."
+                    ),
+                    status="Unread"
+                )
+
+        return Response(
+            {"message": f"Notifications sent to {len(expiring_soon_subscriptions)} user(s) with expiring subscriptions."},
+            status=status.HTTP_200_OK
+        )
+
+#6. Send notification to users when new subscription plan is added
+
+class CreateSubscriptionPlanAndNotifyView(APIView):
+    """
+    API View for creating a new subscription plan and notifying all active users.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Check if the user has admin permissions
+        if not request.user.is_admin:
+            return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Extract subscription plan details from the request
+        plan_type = request.data.get("plan_type")
+        start_date = request.data.get("start_date")
+        end_date = request.data.get("end_date")
+        status_value = request.data.get("status", "active")
+
+        # Validate the required fields
+        if not all([plan_type, start_date, end_date]):
+            return Response({"error": "Missing required fields: plan_type, start_date, end_date."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new subscription plan
+        subscription = Subscription.objects.create(
+            plan_type=plan_type,
+            start_date=start_date,
+            end_date=end_date,
+            status=status_value
+        )
+
+        # Fetch all active users excluding admin users
+        active_users = CustomUser.objects.filter(is_active=True, is_admin=False)
+
+        # Send a notification to each active user
+        for user in active_users:
             Notification.objects.create(
-                receiver_id=user.user_id,  # Assuming Notification model has receiver_id
-                notification_title="Subscription Expiry Reminder",
-                notification_content=notification_message,
+                receiver_id=user.user_id,
+                notification_title="New Subscription Plan Added",
+                notification_content=(
+                    f"A new subscription plan '{subscription.plan_type}' has been added. "
+                    f"Start Date: {subscription.start_date}, End Date: {subscription.end_date}. "
+                    "Check it out and subscribe now!"
+                ),
                 status="Unread"
             )
 
+        # Return success response
         return Response(
-            {"message": f"Notifications sent to {len(expiring_users_to_notify)} user(s) with expiring subscriptions."},
-            status=status.HTTP_200_OK
+            {"message": f"Subscription plan '{subscription.plan_type}' created and notifications sent to {active_users.count()} user(s)."},
+            status=status.HTTP_201_CREATED
         )

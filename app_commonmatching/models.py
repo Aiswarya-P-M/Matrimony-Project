@@ -4,20 +4,14 @@ class CommonMatchingTable(models.Model):
 
     TYPE_CHOICES = [
         ('gender', 'Gender'),
-        # ('age', 'Age'),
+        
         ('caste', 'Caste'),
 
         ('religion', 'Religion'),
 
         ('profession', 'Profession'),
 
-        # ('income', 'Income'),
-
         ('education', 'Education'),
-
-        # ('height', 'Height'),
-
-        # ('weight', 'Weight'),
 
         ('location', 'Location'),
 

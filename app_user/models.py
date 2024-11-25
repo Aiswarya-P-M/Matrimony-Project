@@ -44,5 +44,12 @@ class CustomUser(AbstractUser):
             self.set_password(self.password)
         super().save(*args, **kwargs)
 
-
+    # def get_last_login(self):
+    #     """
+    #     Returns the exact last login time of the user.
+    #     If the last_login is None, return a default message.
+    #     """
+    #     if self.last_login:
+    #         return self.last_login
+    #     return "User has not logged in yet."
     

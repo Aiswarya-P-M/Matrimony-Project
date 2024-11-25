@@ -1,13 +1,13 @@
 # **API Documentation**
 
-This project mainly consists of 8 apps and 42 api endpoints.
+This project mainly consists of 8 apps and 44 api endpoints.
 
 1. User app - 11
 2. UserProfile app - 5
 3. Preference app - 3
 4. Matching app - 2
-5. Message app - 7
-6. Notification app - 5
+5. Message app - 8
+6. Notification app - 6
 7. Subscription app - 5
 8. Commonmatching app - 4
 
@@ -3584,13 +3584,71 @@ Content-Type:  application/json
 }
 ```
 
+## 6. Send Notification while creating new Subscription
+
+* `URL`:  http://localhost:8000/notification/notifysubscription/
+
+* `Method` : POST
+
+* `Description`: Sending notification while adding new subscription.
+
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /notification/notifysubscription/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 371a77d488199b7dc3be15c9424b96b555322086"
+}
+
+```
+`Request Payload`
+```json
+{
+    "plan_type":"Gold",
+    "start_date":"2024-01-01",
+    "end_date":"2025-06-30"
+}
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```
+{
+    "message": "Subscription plan 'Gold' created and notifications sent to 6 user(s)."
+}
+```
+
+
+### Other Responses
+
+### **1. Forbidden**
+
+**HTTP Status:** `403 FORBIDDEN`
+
+```json
+{
+   "message": "You do not have permissions to perform this action."
+}
+```
+
+
+
 
 ### Messages
 
-1. **No  Subscription expiry**
+1. **Forbidden**
 ```json
 {
-    "message": "No subscriptions expiring within the next 2 days."
+   "message": "You do not have permissions to perform this action."
 }
 ```
 ---
@@ -4127,5 +4185,74 @@ Content-Type:  application/json
 }
 ```
 ---
+
+## 8. Viewing New subscription added  notification
+
+* `URL`:http://localhost:8000/message/newsubscription/
+
+* `Method` : GET
+
+* `Description`: Viewing new subscription added notification.
+  
+* `Content-type`:
+  
+        Content-Type: application/json
+
+
+### Example Request
+```json
+```http
+GET /message/newsubscription/ HTTP/1.1
+Host: api.example.com
+Content-Type:  application/json
+
+    {
+    "Authorization": "Token 03c41df36a2a5b92d4655c5fcfc53149ff56db46"
+}
+
+```
+
+### Example Reponse
+
+1.` HTTP Status: 200 OK`
+```json
+{
+    "notifications": [
+        {
+            "id": 124,
+            "title": "New Subscription Plan Added",
+            "content": "A new subscription plan 'Gold' has been added. Start Date: 2024-01-01, End Date: 2025-06-30. Check it out and subscribe now!",
+            "status": "Unread",
+            "created_on": "2024-11-25T10:21:11.709036Z"
+        }
+    ]
+}
+
+```
+
+
+### Other Responses
+
+### **1. No Subscription added notification found.**
+
+**HTTP Status:** `204 NO CONTENT`
+
+```json
+{
+   "message": "No new notifications about subscription plans."
+}
+```
+
+
+### Messages
+
+1. **No Subscription added notification found.**
+```json
+{
+   "message": "No new notifications about subscription plans."
+}
+```
+---
+
 
 

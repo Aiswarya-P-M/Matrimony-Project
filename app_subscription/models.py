@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import date, timedelta
 # Create your models here.
 
 class Subscription(models.Model):
@@ -26,3 +26,13 @@ class Subscription(models.Model):
     def __str__(self):
         return f"Subscription {self.subscription_id} - {self.plan_type}"
 
+    def remaining_duration(self):
+        """Calculate the remaining days for this subscription."""
+        today = date.today()
+        if self.end_date < today:
+            return 0
+        return (self.end_date - today).days
+
+    def is_expiring_soon(self, days=2):
+        """Check if the subscription is expiring within the next `days` days."""
+        return self.remaining_duration() == days
