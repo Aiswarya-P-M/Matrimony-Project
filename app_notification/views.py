@@ -249,47 +249,53 @@ class CreateSubscriptionPlanAndNotifyView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        # Check if the user has admin permissions
-        if not request.user.is_admin:
-            return Response({"error": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            # Extract subscription plan details
+            plan_type = request.data.get("plan_type")
+            start_date = request.data.get("start_date")
+            end_date = request.data.get("end_date")
+            status_value = request.data.get("status", "active")
 
-        # Extract subscription plan details from the request
-        plan_type = request.data.get("plan_type")
-        start_date = request.data.get("start_date")
-        end_date = request.data.get("end_date")
-        status_value = request.data.get("status", "active")
+            # Validate required fields
+            if not all([plan_type, start_date, end_date]):
+                return Response(
+                    {"error": "Missing required fields: plan_type, start_date, end_date."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        # Validate the required fields
-        if not all([plan_type, start_date, end_date]):
-            return Response({"error": "Missing required fields: plan_type, start_date, end_date."},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        # Create a new subscription plan
-        subscription = Subscription.objects.create(
-            plan_type=plan_type,
-            start_date=start_date,
-            end_date=end_date,
-            status=status_value
-        )
-
-        # Fetch all active users excluding admin users
-        active_users = CustomUser.objects.filter(is_active=True, is_admin=False)
-
-        # Send a notification to each active user
-        for user in active_users:
-            Notification.objects.create(
-                receiver_id=user.user_id,
-                notification_title="New Subscription Plan Added",
-                notification_content=(
-                    f"A new subscription plan '{subscription.plan_type}' has been added. "
-                    f"Start Date: {subscription.start_date}, End Date: {subscription.end_date}. "
-                    "Check it out and subscribe now!"
-                ),
-                status="Unread"
+            # Create the subscription
+            subscription = Subscription.objects.create(
+                plan_type=plan_type,
+                start_date=start_date,
+                end_date=end_date,
+                status=status_value,
             )
 
-        # Return success response
-        return Response(
-            {"message": f"Subscription plan '{subscription.plan_type}' created and notifications sent to {active_users.count()} user(s)."},
-            status=status.HTTP_201_CREATED
-        )
+            # Fetch active users and send notifications
+            active_users = CustomUser.objects.filter(is_active=True, is_admin=False)
+            for user in active_users:
+                Notification.objects.create(
+                    receiver_id=user.user_id,
+                    notification_title="New Subscription Plan Added",
+                    notification_content=(
+                        f"A new subscription plan '{subscription.plan_type}' has been added. "
+                        f"Start Date: {subscription.start_date}, End Date: {subscription.end_date}. "
+                        "Check it out and subscribe now!"
+                    ),
+                    status="Unread",
+                )
+
+            # Return success response
+            return Response(
+                {
+                    "message": f"Subscription plan '{subscription.plan_type}' created and notifications sent to {active_users.count()} user(s)."
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except Exception as e:
+            # Log and handle generic errors
+            return Response(
+                {"error": f"An error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
