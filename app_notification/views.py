@@ -1,6 +1,7 @@
 # from django.contrib.auth import get_user_model
 from datetime import datetime, timedelta
 from django.utils.timezone import now
+from django.utils import timezone
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,6 +17,8 @@ from app_subscription.models import Subscription
 from app_userprofile.models import UserProfile
 from app_preference.models import Preference
 from app_commonmatching.models import CommonMatchingTable, MasterTable
+
+
 
 #1. Unread message notification
 
@@ -161,7 +164,6 @@ class AddMasterTableEntryAndNotify(APIView):
         # Get the type_id and value from the request data
         type_id = request.data.get('type_id')
         value = request.data.get('value')
-        print(type_id, value)
 
         # Check if both type_id and value are provided
         if not type_id or not value:  # Corrected the condition
@@ -173,6 +175,10 @@ class AddMasterTableEntryAndNotify(APIView):
         except CommonMatchingTable.DoesNotExist:
             return Response({"error": "Invalid type_id."}, status=status.HTTP_400_BAD_REQUEST)
         
+        if MasterTable.objects.filter(type=common_type, value=value).exists():
+            return Response({"error": f"The value '{value}' already exists in the {common_type.type} category."}, status=status.HTTP_400_BAD_REQUEST)
+
+
         # Create the new MasterTable entry, passing the primary key (type_id) from common_type
         new_entry = MasterTable.objects.create(type=common_type, value=value)
 
@@ -209,7 +215,7 @@ class NotifyExpiringSubscriptionsView(APIView):
 
         # Get all active subscriptions
         expiring_subscriptions = Subscription.objects.filter(
-            status='active'
+            is_active=True  # Only active subscriptions
         )
 
         # Filter subscriptions expiring in 2 days
@@ -229,7 +235,7 @@ class NotifyExpiringSubscriptionsView(APIView):
                     receiver_id=user.user_id,
                     notification_title="Subscription Expiry Reminder",
                     notification_content=(
-                        f"Your subscription plan '{subscription.plan_type}' will expire on {subscription.end_date}. "
+                        f"Your subscription plan '{subscription.plan_type}' will expire on {subscription.calculate_end_date(subscription.created_on)}. "
                         "Please renew to continue enjoying our services."
                     ),
                     status="Unread"
@@ -299,3 +305,24 @@ class CreateSubscriptionPlanAndNotifyView(APIView):
                 {"error": f"An error occurred: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+#get all notification
+
+class GetallNotificationView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request):
+        notifications = Notification.objects.filter(receiver_id=request.user.user_id).order_by('-created_on')
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+#get all unread notifications
+
+class GetallUnreadNotificationView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request):
+        notifications = Notification.objects.filter(receiver_id=request.user.user_id, status='unread').order_by('-created_on')
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

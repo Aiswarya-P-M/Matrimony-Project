@@ -28,6 +28,10 @@ class Preferenceserializers(serializers.ModelSerializer):
         if is_range:
             if not isinstance(value, list) or len(value) != 2:
                 raise serializers.ValidationError(f"{field_type.capitalize()} must be a list with two values representing a range [min, max].")
+            
+            if not all(isinstance(item, int) for item in value):
+                raise serializers.ValidationError(f"All values in {field_type.capitalize()} range must be integers.")
+
             if value[0] > value[1]:
                 raise serializers.ValidationError(f"The minimum {field_type} must be less than or equal to the maximum {field_type}.")
             return value
@@ -44,6 +48,7 @@ class Preferenceserializers(serializers.ModelSerializer):
             if not isinstance(value, list):
                 raise serializers.ValidationError(f"{field_type.capitalize()} should be a list of values.")
             
+            #create a new list by iterating over each element (item) in the iterable value.
             invalid_values = [item for item in value if item not in valid_values]
             if invalid_values:
                 raise serializers.ValidationError(

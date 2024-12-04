@@ -31,7 +31,7 @@ class CommonMatchingTable(models.Model):
 
 class MasterTable(models.Model):
     type = models.ForeignKey(CommonMatchingTable, on_delete=models.DO_NOTHING)
-    value = models.CharField(max_length=50)
+    value = models.CharField(max_length=50,unique=True)
     code = models.CharField(max_length=50, unique=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -47,7 +47,7 @@ class MasterTable(models.Model):
             'location': 'LO',
             'language': 'LA',
             'marital_status': 'MS'
-        }.get(self.type.type, 'XX')  # Corrected this to self.type.type
+        }.get(self.type.type, 'XX')  # If the type isn't found, it defaults to 'XX'.
 
         # Get the last entry to determine the new number for the code
         last_entry = MasterTable.objects.filter(type=self.type).order_by('-id').first()

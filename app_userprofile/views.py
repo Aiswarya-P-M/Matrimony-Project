@@ -13,6 +13,7 @@ from .models import UserProfile
 from .serializers import UserProfileserializers
 
 # 1. creating a profile
+
 class CreateProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
@@ -30,6 +31,7 @@ class CreateProfileView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
 # 2. Viewing the details of all profile
+
     def get(self, request):
         profile=UserProfile.objects.all()
         paginator = PageNumberPagination()
@@ -40,6 +42,7 @@ class CreateProfileView(APIView):
 
 
 #3. get profile details of specific user
+
 class ProfileDetailsView(APIView):
     permission_classes=[permissions.IsAuthenticated]
     def get(self, request):

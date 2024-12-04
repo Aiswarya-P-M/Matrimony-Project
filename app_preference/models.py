@@ -17,7 +17,6 @@ class Preference(models.Model):
     Location = models.JSONField(null=True, blank=True)  # List of locations
     Language = models.JSONField(null=True, blank=True)  # List of languages
 
-    # Single-value fields
     Caste = models.JSONField(null=True, blank=True)
     Religion = models.JSONField(null=True, blank=True)
     Gender = models.CharField(max_length=50, null=True, blank=True)

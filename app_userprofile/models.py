@@ -1,4 +1,8 @@
 from django.db import models
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+from datetime import date
+
 from app_user.models import CustomUser
 # Create your models here.
 class UserProfile(models.Model):
@@ -22,5 +26,21 @@ class UserProfile(models.Model):
     updated_on=models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
 
+    def save(self, *args, **kwargs):
+        if self.Date_of_Birth:
+            # Validate if Date_of_Birth is not in the future
+            # if self.Date_of_Birth > timezone.now().date():
+            #     raise ValidationError("Date of birth cannot be in the future.")
+
+            today = timezone.now().date()
+            self.Age = today.year - self.Date_of_Birth.year - (
+                (today.month, today.day) < (self.Date_of_Birth.month, self.Date_of_Birth.day)
+            )
+        
+        super().save(*args, **kwargs)
+
 
     
+
+    def __str__(self):
+        return f"Profile of {self.user_id.username}"

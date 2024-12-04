@@ -1,3 +1,4 @@
+from django.utils.timezone import now
 from rest_framework import serializers
 from .models import UserProfile
 from app_commonmatching.models import CommonMatchingTable, MasterTable
@@ -8,6 +9,22 @@ class UserProfileserializers(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = '__all__'  
+
+    
+    def validate(self, data):
+        # Check Date_of_Birth and calculate age
+        date_of_birth = data.get('Date_of_Birth')
+        if date_of_birth:
+            today = now().date()
+            age = today.year - date_of_birth.year - (
+                (today.month, today.day) < (date_of_birth.month, date_of_birth.day)
+            )
+            if age < 18:
+                raise serializers.ValidationError("Users must be at least 18 years old to create a profile.")
+            if age > 55:
+                raise serializers.ValidationError("Users must be at most 55 years old to create a profile.")
+        return data
+
 
 
     def validate_field(self, value, field_type):

@@ -7,11 +7,138 @@ from rest_framework.views import APIView
 
 from .models import Message
 from .serializers import MessageSerializers
+from app_user.models import CustomUser
+from app_userprofile.models import UserProfile
 
 from app_notification.models import Notification
 from app_notification.serializers import NotificationSerializer
+from app_subscription.models import Subscription
+
+#1. Send request
+
+class SendRequestView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        sender = request.user
+        receiver_id = request.data.get('receiver_id')
+        content = request.data.get('content', 'Hi, I would like to connect')
 
 
+        if not sender.subscription_plan:
+            return Response({"error":"You need to subscribe for send request"})
+
+        try:
+            receiver = CustomUser.objects.get(user_id=receiver_id)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "Receiver does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if sender == receiver:
+            return Response({"error": "You cannot send a request to yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Ensure profiles exist
+        try:
+            sender_profile = UserProfile.objects.get(user_id=sender)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "Sender profile not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            receiver_profile = UserProfile.objects.get(user_id=receiver)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "Receiver profile not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Restrict sending requests to users with the same gender
+        if sender_profile.Gender == receiver_profile.Gender:
+            return Response({"error": "You cannot send a request to a user with the same gender."}, status=status.HTTP_400_BAD_REQUEST)
+
+        
+
+        # Check for existing requests
+        existing_request = Message.objects.filter(
+            sender_id=sender,
+            receiver_id=receiver,
+            message_type='request'
+        ).first()
+
+        if existing_request:
+            if existing_request.status == 'pending':
+                return Response({"error": "You have already sent a pending request to this user."}, status=status.HTTP_400_BAD_REQUEST)
+            elif existing_request.status == 'rejected':
+                return Response({"error": "You cannot send another request. The previous request was rejected."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Prepare message data
+        message_data = {
+            'sender_id': sender.user_id,
+            'receiver_id': receiver.user_id,
+            'content': content,
+            'message_type': 'request',
+            'status': 'pending'
+        }
+
+        # Serialize and save the request
+        serializer = MessageSerializers(data=message_data)
+        if serializer.is_valid():
+            serializer.save()
+
+            # Create a notification
+            notification_content = f"User with ID {sender.user_id} has sent you a connection request."
+            Notification.objects.create(
+                receiver=receiver,
+                notification_title="New Connection Request",
+                notification_content=notification_content,
+                status="Pending"
+            )
+            return Response({"message": "Request sent successfully"}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+#2. Viewing the request
+
+class ViewRequest(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request):
+        receiver =  request.user
+        messages = Message.objects.filter(receiver_id=receiver, message_type='request',status='pending')
+        serializer = MessageSerializers(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+#3. Update the request
+
+class UpdateRequestStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        receiver = request.user
+        message_id = request.data.get('message_id')
+        new_status = request.data.get('status')  # Accepted or Rejected
+
+        # Validate the new status
+        if new_status not in ['accepted', 'rejected']:
+            return Response({"error": "Invalid status. Choose 'accepted' or 'rejected'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the message
+        try:
+            message = Message.objects.get(message_id=message_id, receiver_id=receiver, message_type='request', status='pending')
+        except Message.DoesNotExist:
+            return Response({"error": "Request not found or already responded to."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the status
+        message.status = new_status
+        message.save()
+
+        # Send a notification to the sender
+        notification_content = f"Your connection request to {receiver.username} was {new_status}."
+        Notification.objects.create(
+            receiver=message.sender_id,
+            notification_title="Connection Request Update",
+            notification_content=notification_content,
+            status="Unread"
+        )
+
+        return Response({"message": f"Response {new_status} successfully"}, status=status.HTTP_200_OK)
 
 #1. Create Message 
 
@@ -19,60 +146,94 @@ class CreateMessageView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        # Get the sender (authenticated user) and their subscription plan
+        # Get the sender from the authenticated user
         sender = request.user
-        subscription = sender.subscription_plan
+        receiver_id = request.data.get('receiver_id')  # Receiver ID from the body
+        content = request.data.get('content', '')
 
-        # Set message limits based on the subscription plan
-        if subscription:
-            if subscription.plan_type == 'basic':
-                message_limit = 10
-            elif subscription.plan_type == 'premium':
-                message_limit = 40
-            elif subscription.plan_type == 'platinum':
-                message_limit = None  # Unlimited messages
-            else:
-                message_limit = 0  # Default to no messages for invalid plans
-        else:
+        # Validate if receiver_id is provided
+        if not receiver_id:
             return Response(
-                {"error": "You need a subscription to send messages."},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Receiver ID is required."},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Count messages sent by the user
-        sent_messages_count = Message.objects.filter(sender_id=sender.user_id).count()
-
-        # Check if the user has exceeded their message limit
-        if message_limit is not None and sent_messages_count >= message_limit:
+        # Convert receiver_id to an integer and check if the sender is messaging themselves
+        try:
+            receiver_id = int(receiver_id)
+            if sender.user_id == receiver_id:
+                return Response(
+                    {"error": "You cannot send a message to yourself."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except ValueError:
             return Response(
-                {"error": f"You have reached your message limit of {message_limit} for your subscription plan."},
-                status=status.HTTP_403_FORBIDDEN
+                {"error": "Invalid Receiver ID. Must be an integer."},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Set sender_id in the request data and validate the serializer
-        request.data['sender_id'] = sender.user_id
-        serializer = MessageSerializers(data=request.data)
+        # Validate that the receiver exists
+        try:
+            receiver = CustomUser.objects.get(user_id=receiver_id)
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"error": "Receiver does not exist."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        # Check if the connection request is accepted
+        connection_request = Message.objects.filter(
+            sender_id=sender,
+            receiver_id=receiver,
+            message_type='request',
+            status='accepted'
+        ).first()
+
+        if not connection_request:
+            return Response(
+                {"error": "You can only send messages after the connection request is accepted."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Create and save the message
+        message_data = {
+            'sender_id': sender.user_id,  # Derived from the authenticated user
+            'receiver_id': receiver.user_id,
+            'content': content,
+            'message_type': 'message',  # Specify the type for normal messages
+            'status': 'unread'
+        }
+
+        serializer = MessageSerializers(data=message_data)
         if serializer.is_valid():
             serializer.save()
             return Response(
-                {"message": "Message Sent Successfully"},
+                {"message": "Message Sent Successfully."},
                 status=status.HTTP_201_CREATED
             )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#2. Retrieve all the read message by receiver
 
-    def get(self, request):
-    # Filter messages where the logged-in user is the recipient
-        messages = Message.objects.filter(receiver_id=request.user, status='read')
+# #2. Retrieve all the read message by receiver
+
+#     def get(self, request):
+#     # Filter messages where the logged-in user is the recipient
+#         messages = Message.objects.filter(receiver_id=request.user,message_type='messages',status='read')
         
-        # Serialize the filtered messages
-        serializer = MessageSerializers(messages, many=True)
+#         # Serialize the filtered messages
+#         serializer = MessageSerializers(messages, many=True)
         
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Get all unread messages
+
+class UnreadMessageView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self,request):
+        messages=Message.objects.filter(receiver_id=request.user.user_id,status='unread').order_by('-created_on')
+        serializer=MessageSerializers(messages, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 #3. Message Viewed by receiver
 
@@ -84,7 +245,7 @@ class MessagebyReceiverView(APIView):
         # The logged-in user is the receiver
         receiver = request.user  
         # Filter messages where the logged-in user is the receiver
-        messages = Message.objects.filter(receiver_id=receiver).order_by('-created_on')
+        messages = Message.objects.filter(receiver_id=receiver,message_type='message').order_by('-created_on')
         
         messages.filter(status='unread').update(status='read')
         # Serialize the messages
@@ -95,15 +256,50 @@ class MessagebyReceiverView(APIView):
         # Return the serialized messages
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    
+
+# Viewing the message history of one user with specific user
+
+class ViewMessageHistory(APIView):
+    # Ensure the user is authenticated
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, other_user_id):
+        # The logged-in user
+        user = request.user
+
+        try:
+            # Filter messages sent by the logged-in user to the other user
+            sent_messages = Message.objects.filter(
+                sender_id=user.user_id,
+                receiver_id=other_user_id,
+                message_type='message'
+            )
+
+            # Filter messages received by the logged-in user from the other user
+            received_messages = Message.objects.filter(
+                sender_id=other_user_id,
+                receiver_id=user.user_id,
+                message_type='message'
+            )
+
+            # Combine sent and received messages into a single queryset
+            messages = sent_messages.union(received_messages).order_by('created_on')
+
+            # Serialize the messages
+            serializer = MessageSerializers(messages, many=True)
+
+            # Return the serialized messages
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            # Handle any unexpected errors
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
-# class UnreadMessageView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     def get(self,request):
-#         messages=Message.objects.filter(sender_id=request.user,status='unread').order_by('-created_on')
-#         serializer=MessageSerializers(messages, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 #4. View new match notification 
